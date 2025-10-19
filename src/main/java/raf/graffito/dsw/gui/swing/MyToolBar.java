@@ -1,5 +1,6 @@
 package raf.graffito.dsw.gui.swing;
 
+import raf.graffito.dsw.controller.AboutUsAction;
 import raf.graffito.dsw.controller.ActionManager;
 import raf.graffito.dsw.controller.ExitAction;
 
@@ -12,5 +13,7 @@ public class MyToolBar extends JToolBar {
 
         ExitAction exitAction = actionManager.getExitAction();
         add(exitAction);
+        AboutUsAction aboutUsAction = actionManager.getAboutUsAction();
+        add(aboutUsAction);
     }
 }
