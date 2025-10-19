@@ -5,7 +5,7 @@ public class ApplicationFramework {
     // Buduća polja za model celog projekta
     private static ApplicationFramework instance;
 
-    public ApplicationFramework(){
+    private ApplicationFramework(){
         initialize();
     }
 
