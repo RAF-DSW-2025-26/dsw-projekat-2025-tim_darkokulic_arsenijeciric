@@ -1,11 +1,14 @@
 package raf.graffito.dsw.gui.swing;
 
 import raf.graffito.dsw.controller.ActionManager;
+import raf.graffito.dsw.model.Message;
+import raf.graffito.dsw.model.Subscriber;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
-public class MainFrame extends JFrame {
+public class MainFrame extends JFrame implements Subscriber{
 
     // Buduća polja za sve komponente view-a na glavnom prozoru
 
@@ -44,5 +47,29 @@ public class MainFrame extends JFrame {
 
         MyToolBar toolBar = new MyToolBar(actionManager); // Kreiranje toolbar-a
         add(toolBar, BorderLayout.NORTH); // Postavljanje toolbar-a na vrh prozora
+    }
+
+    @Override
+    public void update(Message message) {
+
+        SwingUtilities.invokeLater(() -> {
+            switch (message.getType()) {
+                case "GREŠKA" -> JOptionPane.showMessageDialog(
+                        this,
+                        message.getContent(),
+                        "Greška",
+                        JOptionPane.ERROR_MESSAGE
+                );
+                case "OBAVEŠTENJE" -> JOptionPane.showMessageDialog(
+                        this,
+                        message.getContent(),
+                        "Informacija",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+                default -> {
+                    // Ignoriše upozorenja i druge tipove
+                }
+            }
+        });
     }
 }
