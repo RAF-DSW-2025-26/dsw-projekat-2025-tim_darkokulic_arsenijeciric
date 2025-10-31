@@ -21,6 +21,11 @@ public class Slide extends GraffLeaf{
         return title;
     }
 
+    @Override
+    public void setNodeName(String nodeName) {
+        title = nodeName;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -35,5 +40,10 @@ public class Slide extends GraffLeaf{
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    @Override
+    public String toString() {
+        return title;
     }
 }

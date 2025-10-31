@@ -11,7 +11,7 @@ public abstract class AbstractGraffAction extends AbstractAction {
         URL ImageURL = getClass().getResource(path); // URL služi za pronalaženje resursa unutar JAR fajla ili klase
         if (ImageURL != null) {
             Image img = new ImageIcon(ImageURL).getImage(); // Napravimo Image iz ImageIcon
-            Image newImg = img.getScaledInstance(30, 30, Image.SCALE_DEFAULT);
+            Image newImg = img.getScaledInstance(20, 20, Image.SCALE_DEFAULT);
             icon = new ImageIcon(newImg);
         } else {
             System.err.println("File " + "images/exit.png" + " not found");

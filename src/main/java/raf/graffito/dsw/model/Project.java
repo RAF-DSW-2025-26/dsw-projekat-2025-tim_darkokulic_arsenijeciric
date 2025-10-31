@@ -37,6 +37,11 @@ public class Project extends GraffNodeComposite{
         return name;
     }
 
+    @Override
+    public void setNodeName(String nodeName) {
+        this.name = nodeName;
+    }
+
     public String getName() {
         return name;
     }
@@ -59,5 +64,10 @@ public class Project extends GraffNodeComposite{
 
     public void setNumber(Integer number) {
         this.number = number;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

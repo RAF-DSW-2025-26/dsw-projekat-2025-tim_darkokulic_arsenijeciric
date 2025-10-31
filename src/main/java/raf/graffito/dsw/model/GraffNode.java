@@ -16,9 +16,17 @@ public abstract class GraffNode {
     }
 
     public abstract void execute();
+
     public abstract String getNodeName();
+
+    public abstract void setNodeName(String nodeName);
 
     public GraffNode findByName(String name) {
         return getNodeName().equals(name) ? this : null;
+    }
+
+    @Override
+    public String toString() {
+        return getNodeName();
     }
 }

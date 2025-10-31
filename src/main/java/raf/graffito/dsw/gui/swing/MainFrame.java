@@ -1,8 +1,11 @@
 package raf.graffito.dsw.gui.swing;
 
 import raf.graffito.dsw.controller.ActionManager;
+import raf.graffito.dsw.controller.GraffTreeCellRenderer;
 import raf.graffito.dsw.model.Message;
+import raf.graffito.dsw.model.Project;
 import raf.graffito.dsw.model.Subscriber;
+import raf.graffito.dsw.model.Workspace;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,7 +20,6 @@ public class MainFrame extends JFrame implements Subscriber{
 
 
     private MainFrame() {
-        actionManager = new ActionManager();
         initialize();
     }
 
@@ -42,11 +44,41 @@ public class MainFrame extends JFrame implements Subscriber{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Zatvaranje aplikacije pri zatvaranju prozora
         setTitle("Graffito"); // Naslov prozora
 
+        GraffTreeImplementation graffTree = new GraffTreeImplementation();
+
+        actionManager = new ActionManager(graffTree, this);
+
         MyMenuBar menu = new MyMenuBar(actionManager); // Kreiranje menija
         setJMenuBar(menu); // Postavljanje menija na prozor
 
         MyToolBar toolBar = new MyToolBar(actionManager); // Kreiranje toolbar-a
         add(toolBar, BorderLayout.NORTH); // Postavljanje toolbar-a na vrh prozora
+
+        Workspace workspace = new Workspace("My Workspace");
+
+        JTree tree = graffTree.generateTree(workspace);
+        tree.setCellRenderer(new GraffTreeCellRenderer()); // renderer koji postavlja custom ikonice za sve komponente
+        tree.setEditable(false);
+
+        JScrollPane treeScroll = new JScrollPane(tree);
+        treeScroll.setPreferredSize(new Dimension(250, getHeight()));
+
+        JPanel rightPanel = new JPanel(new BorderLayout());
+
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeScroll, rightPanel);
+        splitPane.setDividerLocation(250);
+        splitPane.setResizeWeight(0);
+        /// ogranicenje koliko moze da se razvlaci levi prozor
+        splitPane.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, evt -> {
+            int dividerLocation = splitPane.getDividerLocation();
+            int maxDivider = 300;
+            if (dividerLocation > maxDivider) {
+                SwingUtilities.invokeLater(() -> splitPane.setDividerLocation(maxDivider));
+            }
+        });
+
+        add(splitPane, BorderLayout.CENTER);
+
     }
 
     @Override
