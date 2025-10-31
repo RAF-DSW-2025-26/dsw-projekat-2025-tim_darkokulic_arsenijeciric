@@ -28,11 +28,21 @@ public class Workspace extends GraffNodeComposite{
         return name;
     }
 
+    @Override
+    public void setNodeName(String nodeName) {
+        this.name = nodeName;
+    }
+
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }
