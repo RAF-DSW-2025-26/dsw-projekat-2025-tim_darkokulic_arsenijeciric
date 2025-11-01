@@ -1,6 +1,7 @@
 package raf.graffito.dsw.controller;
 
 import raf.graffito.dsw.gui.swing.GraffTree;
+import raf.graffito.dsw.gui.swing.MainFrame;
 
 import javax.swing.*;
 
@@ -11,8 +12,9 @@ public class ActionManager {
     private RenameAction renameAction;
     private DeleteAction deleteAction;
     private EditProjectAction editProjectAction;
+    private ProjectTabController projectController;
 
-    public ActionManager(GraffTree graffTree, JFrame parent) {
+    public ActionManager(GraffTree graffTree, JFrame parent, MainFrame mainFrame) {
         exitAction = new ExitAction();
         aboutAction = new AboutUsAction();
         addAction = new AddAction(graffTree);
@@ -20,6 +22,7 @@ public class ActionManager {
         deleteAction = new DeleteAction(graffTree);
         editProjectAction = new EditProjectAction(graffTree, parent);
         editProjectAction.setEnabled(false);
+        projectController = new ProjectTabController(mainFrame, mainFrame.getTabbedPane());
     }
 
     public ExitAction getExitAction(){
@@ -44,5 +47,9 @@ public class ActionManager {
 
     public EditProjectAction getEditProjectAction() {
         return editProjectAction;
+    }
+
+    public ProjectTabController getProjectController() {
+        return projectController;
     }
 }

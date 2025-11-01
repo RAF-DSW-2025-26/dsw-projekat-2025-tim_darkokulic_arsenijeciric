@@ -1,6 +1,7 @@
 package raf.graffito.dsw.controller;
 
 import raf.graffito.dsw.gui.swing.GraffTree;
+import raf.graffito.dsw.gui.swing.MainFrame;
 import raf.graffito.dsw.model.*;
 
 import javax.swing.*;
@@ -34,6 +35,11 @@ public class AddAction extends AbstractGraffAction{
             Presentation newPresentation = new Presentation(projectNode, "New Presentation");
             projectNode.addChild(newPresentation);
             graffTree.addChild(projectNode, newPresentation);
+
+            MainFrame.getInstance()
+                    .getActionManager()
+                    .getProjectController()
+                    .addPresentationTab(newPresentation, projectNode.getColor());
 
         } else if (selected instanceof Presentation presNode) {
             Slide newSlide = new Slide(presNode, "New Slide", "Empty");

@@ -9,4 +9,5 @@ public class ConsoleLogger implements Logger {
     public void update(Message message) {
         System.out.println("[" + message.getType() + "][" + message.getTimestamp() + "] " + message.getContent());
     }
+
 }

@@ -20,4 +20,5 @@ public class FileLogger implements Logger {
             System.err.println("Greska" + e.getMessage());
         }
     }
+
 }
