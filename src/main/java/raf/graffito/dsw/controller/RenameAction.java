@@ -1,9 +1,11 @@
 package raf.graffito.dsw.controller;
 
 import raf.graffito.dsw.gui.swing.GraffTree;
+import raf.graffito.dsw.gui.swing.MainFrame;
 import raf.graffito.dsw.model.*;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 
 public class RenameAction extends AbstractGraffAction {
@@ -48,6 +50,22 @@ public class RenameAction extends AbstractGraffAction {
 
         if (newName != null && !newName.isBlank()) {
             graffTree.renameNode(selected, newName);
+
+            // update-uje desni panel sa informacijama da je ime promenjeno
+            if (selected instanceof Project project) {
+                JTabbedPane tabbedPane = MainFrame.getInstance().getTabbedPane();
+                Presentation currentPresentation = null;
+
+                int selectedIndex = tabbedPane.getSelectedIndex();
+                if (selectedIndex >= 0) {
+                    Component component = tabbedPane.getComponentAt(selectedIndex);
+                    if (component instanceof JPanel panel) {
+                        currentPresentation = (Presentation) panel.getClientProperty("presentation");
+                    }
+                }
+
+                MainFrame.getInstance().updateSelected(project, currentPresentation);
+            }
         }
     }
 }

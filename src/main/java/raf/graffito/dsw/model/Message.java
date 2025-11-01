@@ -9,6 +9,7 @@ public class Message {
     private final String type;
     private final String timestamp;
 
+
     private static final DateTimeFormatter format = DateTimeFormatter.ofPattern("dd.MM.yyyy. HH:mm");
 
     public Message(String content, String type) {
@@ -28,4 +29,5 @@ public class Message {
     public String getTimestamp() {
         return timestamp;
     }
+
 }
