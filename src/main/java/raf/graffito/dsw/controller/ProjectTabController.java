@@ -1,6 +1,7 @@
 package raf.graffito.dsw.controller;
 
 import raf.graffito.dsw.gui.swing.MainFrame;
+import raf.graffito.dsw.gui.swing.view.PresentationView;
 import raf.graffito.dsw.model.GraffNode;
 import raf.graffito.dsw.model.Presentation;
 import raf.graffito.dsw.model.Project;
@@ -14,24 +15,18 @@ import java.util.Set;
 public class ProjectTabController {
 
     private final MainFrame mainFrame;
-    private final JTabbedPane tabbedPane;
+    private final PresentationView presentationView;
     private final Set<Color> usedColors = new HashSet<>();
 
-    public ProjectTabController(MainFrame mainFrame, JTabbedPane tabbedPane) {
+    public ProjectTabController(MainFrame mainFrame, PresentationView presentationView) {
         this.mainFrame = mainFrame;
-        this.tabbedPane = tabbedPane;
+        this.presentationView = presentationView;
 
-        // listener koji proverava da li smo promenili tab
-        tabbedPane.addChangeListener(e -> {
-            int selectedIndex = tabbedPane.getSelectedIndex();
-            if (selectedIndex >= 0) {
-                Component component = tabbedPane.getComponentAt(selectedIndex);
-                if (component instanceof JPanel panel) {
-                    Presentation pres = (Presentation) panel.getClientProperty("presentation");
-                    if (pres != null && pres.getParent() instanceof Project project) {
-                        mainFrame.updateSelected(project, pres);
-                    }
-                }
+        // Listener to check when we change tabs
+        presentationView.getTabbedPane().addChangeListener(e -> {
+            Presentation pres = presentationView.getCurrentPresentation();
+            if (pres != null && pres.getParent() instanceof Project project) {
+                mainFrame.updateSelected(project, pres);
             }
         });
     }
@@ -40,14 +35,12 @@ public class ProjectTabController {
         Color initialColor = Color.WHITE;
 
         JColorChooser colorChooser = new JColorChooser(initialColor);
-
         colorChooser.setPreviewPanel(new JPanel());
 
         AbstractColorChooserPanel[] panels = colorChooser.getChooserPanels();
-        // brisemo ostale tabove panela za biranja boje
+        // Remove other color chooser panels
         for (AbstractColorChooserPanel accp : panels) {
             String name = accp.getDisplayName();
-
             if (!name.equals("Swatches")) {
                 colorChooser.removeChooserPanel(accp);
             }
@@ -80,7 +73,7 @@ public class ProjectTabController {
     }
 
     public void openProjectTabs(Project project) {
-        tabbedPane.removeAll();
+        presentationView.clearAllTabs();
 
         Color projectColor = chooseProjectColor(project);
         if (projectColor == null) return;
@@ -88,7 +81,7 @@ public class ProjectTabController {
 
         for (GraffNode child : project.getChildren()) {
             if (child instanceof Presentation pres) {
-                addPresentationTab(pres, projectColor);
+                presentationView.addPresentationTab(pres, projectColor);
             }
         }
 
@@ -99,15 +92,15 @@ public class ProjectTabController {
         mainFrame.updateSelected(project, firstPresentation);
     }
 
-    // pomocna funkcija za otvaranje desnim klikom koja bypass-uje biranje boja
+    // Helper function for right-click opening that bypasses color selection
     public void openProjectTabsNoColor(Project project) {
-        tabbedPane.removeAll();
+        presentationView.clearAllTabs();
 
         Color projectColor = project.getColor() != null ? project.getColor() : Color.LIGHT_GRAY;
 
         for (GraffNode child : project.getChildren()) {
             if (child instanceof Presentation pres) {
-                addPresentationTab(pres, projectColor);
+                presentationView.addPresentationTab(pres, projectColor);
             }
         }
 
@@ -119,37 +112,10 @@ public class ProjectTabController {
     }
 
     public void addPresentationTab(Presentation pres, Color projectColor) {
-        JPanel slidePanel = new JPanel();
-        slidePanel.setBackground(Color.WHITE);
-
-        slidePanel.putClientProperty("presentation", pres);
-
-        tabbedPane.addTab(pres.getNodeName(), slidePanel);
-
-        int index = tabbedPane.indexOfComponent(slidePanel);
-        JLabel tabLabel = new JLabel(pres.getNodeName());
-        tabLabel.setOpaque(true);
-        tabLabel.setBackground(projectColor);
-        tabLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-
-        tabbedPane.setTabComponentAt(index, tabLabel);
+        presentationView.addPresentationTab(pres, projectColor);
     }
 
     public void renamePresentationTab(Presentation pres, String newName) {
-        // metoda koja uzivo update-uje imena tabova kada se koristi rename dugme
-        for (int i = 0; i < tabbedPane.getTabCount(); i++) {
-            Component component = tabbedPane.getComponentAt(i);
-
-            if (component instanceof JPanel panel) {
-                Object tabPresentation = panel.getClientProperty("presentation");
-                if (tabPresentation == pres) {
-                    Component tabComponent = tabbedPane.getTabComponentAt(i);
-                    if (tabComponent instanceof JLabel label) {
-                        label.setText(newName);
-                    }
-                    break;
-                }
-            }
-        }
+        presentationView.renamePresentationTab(pres, newName);
     }
 }

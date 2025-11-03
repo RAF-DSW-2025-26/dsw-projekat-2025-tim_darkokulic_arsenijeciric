@@ -12,11 +12,13 @@ public class RenameAction extends AbstractGraffAction {
 
     private GraffTree graffTree;
     private JFrame parent;
+    private GraffRepository repository;
 
-    public RenameAction(GraffTree graffTree, JFrame parent) {
+    public RenameAction(GraffTree graffTree, JFrame parent, GraffRepository repository) {
 
         this.graffTree = graffTree;
         this.parent = parent;
+        this.repository = repository;
 
         putValue(NAME, "Rename");
         putValue(SHORT_DESCRIPTION, "Rename selected node");
@@ -37,7 +39,6 @@ public class RenameAction extends AbstractGraffAction {
             customIcon = new ImageIcon(scaledImg);
         }
 
-        // custom JOptionPane prozor za promenu imena sa custom ikonicom
         String newName = (String) JOptionPane.showInputDialog(
                 parent,
                 "Enter new name:",
@@ -49,22 +50,24 @@ public class RenameAction extends AbstractGraffAction {
         );
 
         if (newName != null && !newName.isBlank()) {
-            graffTree.renameNode(selected, newName);
+            if (repository.renameNode(selected, newName)) {
+                graffTree.renameNode(selected, newName);
 
-            // update-uje desni panel sa informacijama da je ime promenjeno
-            if (selected instanceof Project project) {
-                JTabbedPane tabbedPane = MainFrame.getInstance().getTabbedPane();
-                Presentation currentPresentation = null;
+                // Update views if needed
+                if (selected instanceof Project project) {
+                    JTabbedPane tabbedPane = MainFrame.getInstance().getTabbedPane();
+                    Presentation currentPresentation = null;
 
-                int selectedIndex = tabbedPane.getSelectedIndex();
-                if (selectedIndex >= 0) {
-                    Component component = tabbedPane.getComponentAt(selectedIndex);
-                    if (component instanceof JPanel panel) {
-                        currentPresentation = (Presentation) panel.getClientProperty("presentation");
+                    int selectedIndex = tabbedPane.getSelectedIndex();
+                    if (selectedIndex >= 0) {
+                        Component component = tabbedPane.getComponentAt(selectedIndex);
+                        if (component instanceof JPanel panel) {
+                            currentPresentation = (Presentation) panel.getClientProperty("presentation");
+                        }
                     }
-                }
 
-                MainFrame.getInstance().updateSelected(project, currentPresentation);
+                    MainFrame.getInstance().updateSelected(project, currentPresentation);
+                }
             }
         }
     }
