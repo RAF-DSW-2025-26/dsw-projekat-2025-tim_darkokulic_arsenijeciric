@@ -10,10 +10,11 @@ import java.awt.event.ActionEvent;
 public class AddAction extends AbstractGraffAction{
 
     private GraffTree graffTree;
+    private GraffRepository repository;
 
-    public AddAction(GraffTree graffTree) {
-
+    public AddAction(GraffTree graffTree, GraffRepository repository) {
         this.graffTree = graffTree;
+        this.repository = repository;
 
         putValue(NAME, "Add");
         putValue(SHORT_DESCRIPTION, "Add a new element");
@@ -23,28 +24,30 @@ public class AddAction extends AbstractGraffAction{
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
         GraffNode selected = graffTree.getSelectedNode();
+        if (selected == null) return;
 
-        if (selected instanceof Workspace workspaceNode) {
-            Project newProject = new Project(workspaceNode, "New Project", "Unknown");
-            workspaceNode.addChild(newProject);
-            graffTree.addChild(workspaceNode, newProject);
+        GraffNode newNode = null;
 
-        } else if (selected instanceof Project projectNode) {
-            Presentation newPresentation = new Presentation(projectNode, "New Presentation");
-            projectNode.addChild(newPresentation);
-            graffTree.addChild(projectNode, newPresentation);
+        if (selected instanceof Workspace workspace) {
+            newNode = repository.createNode(workspace, Project.class, "New Project", "Unknown");
 
-            MainFrame.getInstance()
-                    .getActionManager()
-                    .getProjectController()
-                    .addPresentationTab(newPresentation, projectNode.getColor());
+        } else if (selected instanceof Project project) {
+            newNode = repository.createNode(project, Presentation.class, "New Presentation");
 
-        } else if (selected instanceof Presentation presNode) {
-            Slide newSlide = new Slide(presNode, "New Slide", "Empty");
-            presNode.addChild(newSlide);
-            graffTree.addChild(presNode, newSlide);
+            if (newNode instanceof Presentation presentation) {
+                MainFrame.getInstance()
+                        .getActionManager()
+                        .getProjectController()
+                        .addPresentationTab(presentation, project.getColor());
+            }
+
+        } else if (selected instanceof Presentation presentation) {
+            newNode = repository.createNode(presentation, Slide.class, "New Slide", "Empty");
+        }
+
+        if (newNode != null) {
+            graffTree.addChild(selected, newNode);
         }
     }
 }

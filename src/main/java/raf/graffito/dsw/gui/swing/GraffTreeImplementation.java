@@ -1,7 +1,9 @@
 package raf.graffito.dsw.gui.swing;
 
+import raf.graffito.dsw.controller.GraffTreeTransferHandler;
 import raf.graffito.dsw.controller.ProjectTabController;
 import raf.graffito.dsw.model.GraffNode;
+import raf.graffito.dsw.model.GraffRepository;
 import raf.graffito.dsw.model.Presentation;
 import raf.graffito.dsw.model.Project;
 
@@ -13,12 +15,19 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Enumeration;
 
-public class GraffTreeImplementation implements GraffTree{
+public class GraffTreeImplementation implements GraffTree {
 
     private JTree tree;
     private DefaultTreeModel treeModel;
     private DefaultMutableTreeNode rootNode;
+    private GraffRepository repository;
 
+    public GraffTreeImplementation() {
+    }
+
+    public void setRepository(GraffRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public JTree generateTree(GraffNode root) {
@@ -30,9 +39,11 @@ public class GraffTreeImplementation implements GraffTree{
         tree.setEditable(true);
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
-//        tree.setDragEnabled(true);
-//        tree.setDropMode(DropMode.ON_OR_INSERT);
+        tree.setDragEnabled(true);
+        tree.setDropMode(DropMode.ON_OR_INSERT);
+        tree.setTransferHandler(new GraffTreeTransferHandler());
 
+        // Listener koji aktivira dugme za editovanje projekata kada je selektovan projekat
         tree.addTreeSelectionListener(e -> {
             Object selected = tree.getLastSelectedPathComponent();
             boolean isProject = false;
@@ -50,9 +61,9 @@ public class GraffTreeImplementation implements GraffTree{
                     .setEnabled(isProject);
         });
 
-        tree.setToggleClickCount(0); // iskljucuje dupli klik koji otvara i zatvara elemente stabla
+        tree.setToggleClickCount(0);
 
-        // mouse listener za dupli klip
+        // Listener koji slusa za dupli klik da enable-uje slektovanje boje
         tree.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -65,9 +76,9 @@ public class GraffTreeImplementation implements GraffTree{
 
                     if (userObject instanceof Project project) {
                         MainFrame.getInstance()
-                                 .getActionManager()
-                                 .getProjectController()
-                                 .openProjectTabs(project);
+                                .getActionManager()
+                                .getProjectController()
+                                .openProjectTabs(project);
                     }
                 }
             }
@@ -77,7 +88,7 @@ public class GraffTreeImplementation implements GraffTree{
         JMenuItem openProjectItem = new JMenuItem("Open Project");
         projectPopup.add(openProjectItem);
 
-        // akcija za desni klik misem da se otvori projekat
+        // Listener za desni klik koji omogucava otvaranje projekta bez dodeljivanja boje
         tree.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -100,12 +111,10 @@ public class GraffTreeImplementation implements GraffTree{
                 Object userObject = node.getUserObject();
 
                 if (userObject instanceof Project project) {
-                    // uklanja stare listener-e
                     for (ActionListener al : openProjectItem.getActionListeners()) {
                         openProjectItem.removeActionListener(al);
                     }
 
-                    // doda novi listener
                     openProjectItem.addActionListener(ev -> {
                         MainFrame.getInstance()
                                 .getActionManager()
@@ -120,6 +129,7 @@ public class GraffTreeImplementation implements GraffTree{
         return tree;
     }
 
+    // Samo update-uje izgled Tree-a, model je vec update-ovan
     @Override
     public void addChild(GraffNode parent, GraffNode child) {
 
@@ -131,9 +141,9 @@ public class GraffTreeImplementation implements GraffTree{
 
         TreePath path = new TreePath(parentNode.getPath());
         tree.expandPath(path);
-
     }
 
+    // Samo update-uje izgled Tree-a, model je vec update-ovan
     @Override
     public void removeNode(GraffNode node) {
 
@@ -143,16 +153,15 @@ public class GraffTreeImplementation implements GraffTree{
         }
     }
 
+    // Samo update-uje izgled Tree-a, model je vec update-ovan
     @Override
     public void renameNode(GraffNode node, String newName) {
 
-        node.setNodeName(newName);
         DefaultMutableTreeNode treeNode = findTreeNode(node);
         if (treeNode != null) {
             treeModel.nodeChanged(treeNode);
         }
 
-        // update koji menja imena tabova Presentacija
         if (node instanceof Presentation pres) {
             ProjectTabController projectController = MainFrame.getInstance()
                                                               .getActionManager()
@@ -160,7 +169,6 @@ public class GraffTreeImplementation implements GraffTree{
 
             projectController.renamePresentationTab(pres, newName);
 
-            // update-uje desni panel sa novim informacijama
             JTabbedPane tabbedPane = MainFrame.getInstance().getTabbedPane();
             int selectedIndex = tabbedPane.getSelectedIndex();
             if (selectedIndex >= 0) {
@@ -177,7 +185,6 @@ public class GraffTreeImplementation implements GraffTree{
 
     @Override
     public GraffNode getSelectedNode() {
-
         TreePath path = tree.getSelectionPath();
         if (path == null)
             return null;
@@ -186,7 +193,6 @@ public class GraffTreeImplementation implements GraffTree{
     }
 
     private DefaultMutableTreeNode findTreeNode(GraffNode node) {
-
         Enumeration<TreeNode> enumeration = ((DefaultMutableTreeNode) treeModel.getRoot()).breadthFirstEnumeration();
         while (enumeration.hasMoreElements()) {
             DefaultMutableTreeNode current = (DefaultMutableTreeNode) enumeration.nextElement();
@@ -194,7 +200,6 @@ public class GraffTreeImplementation implements GraffTree{
         }
         return null;
     }
-
 
     public JTree getTree() {
         return tree;
