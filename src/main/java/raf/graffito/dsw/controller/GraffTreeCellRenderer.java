@@ -15,7 +15,6 @@ public class GraffTreeCellRenderer extends DefaultTreeCellRenderer {
     private Icon slideIcon;
 
     public GraffTreeCellRenderer() {
-
         workspaceIcon = scaleIcon("/images/workspace.png", 24, 24);
         projectIcon = scaleIcon("/images/project.png", 24, 24);
         presentationIcon = scaleIcon("/images/presentation.png", 24, 24);

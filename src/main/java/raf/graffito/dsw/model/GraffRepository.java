@@ -45,7 +45,7 @@ public class GraffRepository {
 
         if (!isDefaultName(nodeName) && hasDuplicateName(parent, nodeName)) {
             messageGenerator.notifySubscribers(
-                    "Čvor sa imenom '" + nodeName + "' već postoji na ovoj putanji.",
+                    "Čvor sa imenom '" + nodeName + "' već postoji.",
                     "GREŠKA"
             );
             return null;
@@ -104,6 +104,15 @@ public class GraffRepository {
                 return false;
             }
         }
+        if (parent instanceof GraffNodeComposite composite) {
+            composite.removeChild(node);
+            messageGenerator.notifySubscribers(
+                    "Uspešno obrisan " + getNodeTypeName(node.getClass()) + ": " + node.getNodeName(),
+                    "INFO"
+            );
+            return true;
+        }
+
         return false;
     }
 
@@ -241,7 +250,6 @@ public class GraffRepository {
         public NodeFactory(GraffRepository repository) {
             this.repository = repository;
         }
-
 
         public GraffNode createNode(GraffNode parent, Class<? extends GraffNode> nodeType, Object... params) {
 

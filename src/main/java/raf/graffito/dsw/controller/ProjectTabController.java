@@ -22,7 +22,7 @@ public class ProjectTabController {
         this.mainFrame = mainFrame;
         this.presentationView = presentationView;
 
-        // Listener to check when we change tabs
+        // Listener koji slusa kada menjamo tab
         presentationView.getTabbedPane().addChangeListener(e -> {
             Presentation pres = presentationView.getCurrentPresentation();
             if (pres != null && pres.getParent() instanceof Project project) {
@@ -38,7 +38,7 @@ public class ProjectTabController {
         colorChooser.setPreviewPanel(new JPanel());
 
         AbstractColorChooserPanel[] panels = colorChooser.getChooserPanels();
-        // Remove other color chooser panels
+        // Uklanja druge color picker-e
         for (AbstractColorChooserPanel accp : panels) {
             String name = accp.getDisplayName();
             if (!name.equals("Swatches")) {
@@ -92,7 +92,7 @@ public class ProjectTabController {
         mainFrame.updateSelected(project, firstPresentation);
     }
 
-    // Helper function for right-click opening that bypasses color selection
+    // helper funkcija koja bypass-uje biranje boja sa desnim klikom
     public void openProjectTabsNoColor(Project project) {
         presentationView.clearAllTabs();
 

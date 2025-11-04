@@ -117,9 +117,9 @@ public class GraffTreeImplementation implements GraffTree {
 
                     openProjectItem.addActionListener(ev -> {
                         MainFrame.getInstance()
-                                .getActionManager()
-                                .getProjectController()
-                                .openProjectTabsNoColor(project);
+                                 .getActionManager()
+                                 .getProjectController()
+                                 .openProjectTabsNoColor(project);
                     });
 
                     projectPopup.show(tree, e.getX(), e.getY());

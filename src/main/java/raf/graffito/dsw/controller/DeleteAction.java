@@ -27,7 +27,6 @@ public class DeleteAction extends AbstractGraffAction {
         GraffNode selected = graffTree.getSelectedNode();
         if (selected == null) return;
 
-        // Check if it's a presentation being deleted - close its tab
         if (selected instanceof Presentation presentation) {
             MainFrame.getInstance().getPresentationView().closePresentationTab(presentation);
         }
