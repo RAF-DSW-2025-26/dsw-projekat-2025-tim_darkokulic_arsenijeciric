@@ -1,4 +1,4 @@
-package raf.graffito.dsw.gui.swing.view;
+package raf.graffito.dsw.gui.swing;
 
 import raf.graffito.dsw.model.Message;
 import raf.graffito.dsw.model.Presentation;

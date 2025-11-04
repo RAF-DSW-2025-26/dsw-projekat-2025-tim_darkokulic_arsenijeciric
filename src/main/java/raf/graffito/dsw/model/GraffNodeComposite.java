@@ -30,22 +30,14 @@ public abstract class GraffNodeComposite extends GraffNode {
         if(getNodeName().equals(name))
             return this;
 
-        // ispituje na nivou dece ovog Node-a da li su pravi
-        for(GraffNode child : getChildren()) {
-            if(child.getNodeName().equals(name))
-                return child;
-        }
-
-        // ispituje na jednom nivou dublje, da li su deca svakog deteta Node-a pravi
-        for(GraffNode child : getChildren()) {
-            if(child instanceof GraffNodeComposite composite){
-                for(GraffNode grandchild : composite.getChildren()) {
-                    if(grandchild.getNodeName().equals(name))
-                        return grandchild;
-                }
+        // Rekurzivno pretražuje svu decu
+        for (GraffNode child : getChildren()) {
+            GraffNode found = child.findByName(name);
+            if (found != null) {
+                return found;
             }
         }
-
+        // ako nista nije pronadjeno
         return null;
     }
 }

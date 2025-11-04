@@ -2,8 +2,8 @@ package raf.graffito.dsw.gui.swing;
 
 import raf.graffito.dsw.controller.ActionManager;
 import raf.graffito.dsw.controller.GraffTreeCellRenderer;
-import raf.graffito.dsw.gui.swing.view.PresentationView;
-import raf.graffito.dsw.gui.swing.view.ProjectView;
+import raf.graffito.dsw.gui.swing.PresentationView;
+import raf.graffito.dsw.gui.swing.ProjectView;
 import raf.graffito.dsw.model.*;
 
 import javax.swing.*;
