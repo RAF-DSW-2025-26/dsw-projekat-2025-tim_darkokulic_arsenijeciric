@@ -22,6 +22,7 @@ public class AddAction extends AbstractGraffAction{
         putValue(SMALL_ICON, icon);
     }
 
+    /// poziva fabriku koja ce napraviti node po odgovarajucem parentu
     @Override
     public void actionPerformed(ActionEvent e) {
         GraffNode selected = graffTree.getSelectedNode();
