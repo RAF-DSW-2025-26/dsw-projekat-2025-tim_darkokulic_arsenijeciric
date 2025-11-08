@@ -18,12 +18,14 @@ public class MyMenuBar extends JMenuBar {
         DeleteAction deleteAction = actionManager.getDeleteAction();
         RenameAction renameAction = actionManager.getRenameAction();
         EditProjectAction editProjectAction = actionManager.getEditProjectAction();
+        HelpAction helpAction = actionManager.getHelpAction();
         fileMenu.add(exitAction);
         fileMenu.add(aboutUsAction);
         fileMenu.add(addAction);
         fileMenu.add(deleteAction);
         fileMenu.add(renameAction);
         fileMenu.add(editProjectAction);
+        fileMenu.add(helpAction);
 
         add(fileMenu);
     }

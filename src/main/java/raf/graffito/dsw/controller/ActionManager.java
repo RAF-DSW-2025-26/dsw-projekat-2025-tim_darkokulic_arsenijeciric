@@ -1,6 +1,6 @@
 package raf.graffito.dsw.controller;
 
-import raf.graffito.dsw.gui.swing.GraffTree;
+import raf.graffito.dsw.gui.swing.jtree.GraffTree;
 import raf.graffito.dsw.gui.swing.MainFrame;
 import raf.graffito.dsw.model.*;
 
@@ -14,17 +14,16 @@ public class ActionManager {
     private DeleteAction deleteAction;
     private EditProjectAction editProjectAction;
     private ProjectTabController projectController;
-    private GraffRepository repository;
+    private HelpAction helpAction;
 
     public ActionManager(GraffTree graffTree, JFrame parent, MainFrame mainFrame, Workspace workspace) {
 
-        repository = new GraffRepository(workspace);
-
         exitAction = new ExitAction();
         aboutAction = new AboutUsAction();
-        addAction = new AddAction(graffTree, repository);
-        renameAction = new RenameAction(graffTree, parent, repository);  // Pass repository here
-        deleteAction = new DeleteAction(graffTree, repository);
+        addAction = new AddAction(graffTree, projectController);
+        renameAction = new RenameAction(graffTree, parent);
+        deleteAction = new DeleteAction(graffTree);
+        helpAction = new HelpAction();
         editProjectAction = new EditProjectAction(graffTree, parent);
         editProjectAction.setEnabled(false);
         projectController = new ProjectTabController(mainFrame, mainFrame.getPresentationView());
@@ -59,7 +58,6 @@ public class ActionManager {
         return projectController;
     }
 
-    public GraffRepository getRepository() {
-        return repository;
-    }
+    public HelpAction getHelpAction() { return this.helpAction; }
+
 }

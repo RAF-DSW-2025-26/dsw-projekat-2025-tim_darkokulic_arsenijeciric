@@ -1,7 +1,7 @@
 package raf.graffito.dsw.controller;
 
 import raf.graffito.dsw.gui.swing.EditProjectDialog;
-import raf.graffito.dsw.gui.swing.GraffTree;
+import raf.graffito.dsw.gui.swing.jtree.GraffTree;
 import raf.graffito.dsw.gui.swing.MainFrame;
 import raf.graffito.dsw.model.GraffNode;
 import raf.graffito.dsw.model.Presentation;

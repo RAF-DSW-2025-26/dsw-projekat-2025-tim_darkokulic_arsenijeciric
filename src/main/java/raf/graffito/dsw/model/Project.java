@@ -7,7 +7,6 @@ public class Project extends GraffNodeComposite{
     private String name;
     private String author;
     private Integer number;
-    private Color color;
 
     public Project(GraffNode parent, String name, String author) {
         super(parent);
@@ -67,14 +66,6 @@ public class Project extends GraffNodeComposite{
 
     public void setNumber(Integer number) {
         this.number = number;
-    }
-
-    public Color getColor() {
-        return color;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
     }
 
     @Override

@@ -1,8 +1,10 @@
 package raf.graffito.dsw.controller;
 
-import raf.graffito.dsw.gui.swing.GraffTree;
+import raf.graffito.dsw.core.ApplicationFramework;
+import raf.graffito.dsw.gui.swing.jtree.GraffTree;
 import raf.graffito.dsw.gui.swing.MainFrame;
 import raf.graffito.dsw.model.*;
+import raf.graffito.dsw.model.repository.GraffRepository;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,13 +14,11 @@ public class RenameAction extends AbstractGraffAction {
 
     private GraffTree graffTree;
     private JFrame parent;
-    private GraffRepository repository;
 
-    public RenameAction(GraffTree graffTree, JFrame parent, GraffRepository repository) {
+    public RenameAction(GraffTree graffTree, JFrame parent) {
 
         this.graffTree = graffTree;
         this.parent = parent;
-        this.repository = repository;
 
         putValue(NAME, "Rename");
         putValue(SHORT_DESCRIPTION, "Rename selected node");
@@ -30,6 +30,8 @@ public class RenameAction extends AbstractGraffAction {
     public void actionPerformed(ActionEvent e) {
         GraffNode selected = graffTree.getSelectedNode();
         if (selected == null) return;
+
+        GraffRepository repository = ApplicationFramework.getInstance().getRepository();
 
         Icon customIcon = null;
         java.net.URL imageURL = getClass().getResource("/images/edit.png");

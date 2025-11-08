@@ -1,9 +1,9 @@
 package raf.graffito.dsw.gui.swing;
 
-import raf.graffito.dsw.model.Message;
+import raf.graffito.dsw.model.observer.Message;
 import raf.graffito.dsw.model.Presentation;
 import raf.graffito.dsw.model.Project;
-import raf.graffito.dsw.model.Subscriber;
+import raf.graffito.dsw.model.observer.Subscriber;
 
 import javax.swing.*;
 import java.awt.*;

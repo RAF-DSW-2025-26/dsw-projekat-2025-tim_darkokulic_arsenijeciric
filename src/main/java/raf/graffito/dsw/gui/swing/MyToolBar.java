@@ -16,11 +16,12 @@ public class MyToolBar extends JToolBar {
         addActionWithText(actionManager.getRenameAction());
         addActionWithText(actionManager.getDeleteAction());
         addActionWithText(actionManager.getEditProjectAction());
-
+        addActionWithText(actionManager.getHelpAction());
     }
 
     private void addActionWithText(Action action) {
         JButton button = add(action);
+        button.setFocusPainted(false);
         button.setHideActionText(false);
         button.setHorizontalTextPosition(SwingConstants.RIGHT);
         button.setVerticalTextPosition(SwingConstants.CENTER);

@@ -2,9 +2,12 @@ package raf.graffito.dsw.gui.swing;
 
 import raf.graffito.dsw.controller.ActionManager;
 import raf.graffito.dsw.controller.GraffTreeCellRenderer;
-import raf.graffito.dsw.gui.swing.PresentationView;
-import raf.graffito.dsw.gui.swing.ProjectView;
+import raf.graffito.dsw.gui.swing.jtree.GraffTreeImplementation;
 import raf.graffito.dsw.model.*;
+import raf.graffito.dsw.model.observer.Message;
+import raf.graffito.dsw.model.observer.MessageGenerator;
+import raf.graffito.dsw.model.observer.Subscriber;
+import raf.graffito.dsw.model.repository.GraffRepository;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,17 +37,19 @@ public class MainFrame extends JFrame implements Subscriber {
 
     private void initialize() {
         Toolkit kit = Toolkit.getDefaultToolkit();
-        Dimension screenSize = kit.getScreenSize();
-        int screenHeight = screenSize.height / 2;
-        int screenWidth = screenSize.width / 2;
+        int screenHeight = 600;
+        int screenWidth = 1000;
         Dimension startSize = new Dimension(screenWidth, screenHeight);
         setSize(startSize);
         setMinimumSize(startSize);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Graffito");
+    }
 
-        Workspace workspace = new Workspace("My Workspace");
+    public void finishInitialization(GraffRepository repository, MessageGenerator messageGenerator) {
+
+        Workspace workspace = repository.getWorkspace();
 
         projectView = new ProjectView();
         presentationView = new PresentationView();
@@ -52,13 +57,8 @@ public class MainFrame extends JFrame implements Subscriber {
         GraffTreeImplementation graffTree = new GraffTreeImplementation();
         actionManager = new ActionManager(graffTree, this, this, workspace);
 
-        MessageGenerator messageGenerator = actionManager.getRepository().getMessageGenerator();
-        messageGenerator.addSubscriber(this);
         messageGenerator.addSubscriber(projectView);
         messageGenerator.addSubscriber(presentationView);
-
-        messageGenerator.addSubscriber(LoggerFactory.createLogger("console"));
-        messageGenerator.addSubscriber(LoggerFactory.createLogger("file"));
 
         MyMenuBar menu = new MyMenuBar(actionManager);
         setJMenuBar(menu);

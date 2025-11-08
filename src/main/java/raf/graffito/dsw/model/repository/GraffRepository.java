@@ -1,15 +1,21 @@
-package raf.graffito.dsw.model;
+package raf.graffito.dsw.model.repository;
+
+import raf.graffito.dsw.model.*;
+import raf.graffito.dsw.model.observer.MessageGenerator;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class GraffRepository {
 
     private Workspace workspace;
     private MessageGenerator messageGenerator;
-    private NodeFactory nodeFactory;
+    private Map<Project, ColorDecorator> projectDecorators;
 
     public GraffRepository(Workspace workspace) {
         this.workspace = workspace;
         this.messageGenerator = new MessageGenerator();
-        this.nodeFactory = new NodeFactory(this);
+        this.projectDecorators = new HashMap<>();
     }
 
     public Workspace getWorkspace() {
@@ -24,8 +30,20 @@ public class GraffRepository {
         return messageGenerator;
     }
 
-    public NodeFactory getNodeFactory() {
-        return nodeFactory;
+    public ColorDecorator getProjectDecorator(Project project) {
+        return projectDecorators.get(project);
+    }
+
+    public void setProjectDecorator(Project project, ColorDecorator decorator) {
+        projectDecorators.put(project, decorator);
+    }
+
+    public boolean hasProjectDecorator(Project project) {
+        return projectDecorators.containsKey(project);
+    }
+
+    public void removeProjectDecorator(Project project) {
+        projectDecorators.remove(project);
     }
 
     public GraffNode createNode(GraffNode parent, Class<? extends GraffNode> nodeType, Object... params) {
@@ -51,7 +69,27 @@ public class GraffRepository {
             return null;
         }
 
-        GraffNode newNode = nodeFactory.createNode(parent, nodeType, params);
+        NodeFactory factory = NodeFactoryProvider.getFactory(nodeType);
+
+        if (factory == null) {
+            messageGenerator.notifySubscribers(
+                    "Ne postoji fabrika za tip: " + nodeType.getSimpleName(),
+                    "GREŠKA"
+            );
+            return null;
+        }
+
+        GraffNode newNode = null;
+
+        try {
+            newNode = factory.createNode(parent, params);
+        } catch (Exception e) {
+            messageGenerator.notifySubscribers(
+                    "Greška pri kreiranju čvora: " + e.getMessage(),
+                    "GREŠKA"
+            );
+            return null;
+        }
 
         if (newNode != null) {
             if (parent instanceof GraffNodeComposite composite) {
@@ -96,7 +134,7 @@ public class GraffRepository {
 
 
         if (parent instanceof Project project) {
-            if (!canRemoveChildFromProject(project, node)) {
+            if (project.getChildren().size() <= 1) {
                 messageGenerator.notifySubscribers(
                         "Ne možete obrisati: Projekat mora imati barem jednu prezentaciju ili slajd.",
                         "GREŠKA"
@@ -104,6 +142,11 @@ public class GraffRepository {
                 return false;
             }
         }
+
+        if (node instanceof Project project) {
+            removeProjectDecorator(project);
+        }
+
         if (parent instanceof GraffNodeComposite composite) {
             composite.removeChild(node);
             messageGenerator.notifySubscribers(
@@ -235,6 +278,7 @@ public class GraffRepository {
 
     public void clearAll() {
         workspace.getChildren().clear();
+        projectDecorators.clear();
     }
 
     @Override
@@ -243,41 +287,4 @@ public class GraffRepository {
                 ", Projects: " + getProjectCount() + "]";
     }
 
-    public static class NodeFactory {
-
-        private GraffRepository repository;
-
-        public NodeFactory(GraffRepository repository) {
-            this.repository = repository;
-        }
-
-        public GraffNode createNode(GraffNode parent, Class<? extends GraffNode> nodeType, Object... params) {
-
-            try {
-                if (nodeType == Project.class) {
-                    String name = params.length > 0 ? (String) params[0] : "New Project";
-                    String author = params.length > 1 ? (String) params[1] : "Unknown";
-                    return new Project(parent, name, author);
-
-                } else if (nodeType == Presentation.class) {
-                    String name = params.length > 0 ? (String) params[0] : "New Presentation";
-                    return new Presentation(parent, name);
-
-                } else if (nodeType == Slide.class) {
-                    String title = params.length > 0 ? (String) params[0] : "New Slide";
-                    String content = params.length > 1 ? (String) params[1] : "Empty";
-                    return new Slide(parent, title, content);
-                }
-
-            } catch (Exception e) {
-                repository.getMessageGenerator().notifySubscribers(
-                        "Greška pri kreiranju čvora: " + e.getMessage(),
-                        "GREŠKA"
-                );
-                return null;
-            }
-
-            return null;
-        }
-    }
 }

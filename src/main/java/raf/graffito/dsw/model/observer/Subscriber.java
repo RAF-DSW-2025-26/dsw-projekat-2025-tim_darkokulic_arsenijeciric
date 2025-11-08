@@ -1,4 +1,7 @@
-package raf.graffito.dsw.model;
+package raf.graffito.dsw.model.observer;
+
+import raf.graffito.dsw.model.Presentation;
+import raf.graffito.dsw.model.Project;
 
 public interface Subscriber {
     void update(Message message);

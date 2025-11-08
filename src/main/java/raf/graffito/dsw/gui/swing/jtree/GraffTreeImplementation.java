@@ -1,11 +1,11 @@
-package raf.graffito.dsw.gui.swing;
+package raf.graffito.dsw.gui.swing.jtree;
 
 import raf.graffito.dsw.controller.GraffTreeTransferHandler;
 import raf.graffito.dsw.controller.ProjectTabController;
-import raf.graffito.dsw.model.GraffNode;
-import raf.graffito.dsw.model.GraffRepository;
-import raf.graffito.dsw.model.Presentation;
-import raf.graffito.dsw.model.Project;
+import raf.graffito.dsw.core.ApplicationFramework;
+import raf.graffito.dsw.gui.swing.MainFrame;
+import raf.graffito.dsw.model.*;
+import raf.graffito.dsw.model.repository.GraffRepository;
 
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -20,13 +20,8 @@ public class GraffTreeImplementation implements GraffTree {
     private JTree tree;
     private DefaultTreeModel treeModel;
     private DefaultMutableTreeNode rootNode;
-    private GraffRepository repository;
 
     public GraffTreeImplementation() {
-    }
-
-    public void setRepository(GraffRepository repository) {
-        this.repository = repository;
     }
 
     @Override
@@ -116,10 +111,13 @@ public class GraffTreeImplementation implements GraffTree {
                     }
 
                     openProjectItem.addActionListener(ev -> {
+                        GraffRepository repo = ApplicationFramework.getInstance().getRepository();
+                        ColorDecorator decorator = repo.getProjectDecorator(project);
+
                         MainFrame.getInstance()
                                  .getActionManager()
                                  .getProjectController()
-                                 .openProjectTabsNoColor(project);
+                                 .openProjectTabsNoColor(project, decorator);
                     });
 
                     projectPopup.show(tree, e.getX(), e.getY());

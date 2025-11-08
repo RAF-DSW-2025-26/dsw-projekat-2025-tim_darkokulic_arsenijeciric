@@ -18,4 +18,11 @@ public class ColorDecorator extends GraffNodeDecorator {
     public void setColor(Color color) {
         this.color = color;
     }
+
+    public Project getProject() {
+        if (decoratedNode instanceof Project) {
+            return (Project) decoratedNode;
+        }
+        return null;
+    }
 }
