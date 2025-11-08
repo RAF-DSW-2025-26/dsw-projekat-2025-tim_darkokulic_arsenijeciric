@@ -1,8 +1,9 @@
 package raf.graffito.dsw.gui.swing;
 
-import raf.graffito.dsw.model.Message;
+import raf.graffito.dsw.model.observer.Message;
 import raf.graffito.dsw.model.Presentation;
-import raf.graffito.dsw.model.Subscriber;
+import raf.graffito.dsw.model.Project;
+import raf.graffito.dsw.model.observer.Subscriber;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,6 +11,7 @@ import java.awt.*;
 public class PresentationView extends JPanel implements Subscriber {
 
     private JTabbedPane tabbedPane;
+    private Project openProject;
 
     public PresentationView() {
         initialize();
@@ -18,7 +20,10 @@ public class PresentationView extends JPanel implements Subscriber {
     private void initialize() {
         setLayout(new BorderLayout());
         tabbedPane = new JTabbedPane();
+        tabbedPane.setUI(new ColoredTabbedPaneUI(this));
+        tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
         add(tabbedPane, BorderLayout.CENTER);
+
     }
 
     public JTabbedPane getTabbedPane() {
@@ -33,12 +38,28 @@ public class PresentationView extends JPanel implements Subscriber {
         tabbedPane.addTab(presentation.getNodeName(), slidePanel);
 
         int index = tabbedPane.indexOfComponent(slidePanel);
-        JLabel tabLabel = new JLabel(presentation.getNodeName());
-        tabLabel.setOpaque(true);
-        tabLabel.setBackground(projectColor);
-        tabLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        tabbedPane.setTabComponentAt(index, new JLabel("  " + presentation.getNodeName() + "  "));
+    }
 
-        tabbedPane.setTabComponentAt(index, tabLabel);
+    // Update koji zatvara sve Tabove prezentacija kada se izbrise Projekat kome pripadaju
+    public void closeAllProjectTabs(Project project) {
+        for (int i = tabbedPane.getTabCount() - 1; i >= 0; i--) {
+            Component component = tabbedPane.getComponentAt(i);
+
+            if (component instanceof JPanel panel) {
+                Object tabPresentation = panel.getClientProperty("presentation");
+
+                if (tabPresentation instanceof Presentation pres) {
+                    if (pres.getParent() == project) {
+                        tabbedPane.removeTabAt(i);
+                    }
+                }
+            }
+        }
+
+        if(openProject == project) {
+            openProject = null;
+        }
     }
 
     public void closePresentationTab(Presentation presentation) {
@@ -85,6 +106,18 @@ public class PresentationView extends JPanel implements Subscriber {
             }
         }
         return null;
+    }
+
+    public boolean isProjectOpen(Project project) {
+        return openProject == project;
+    }
+
+    public void setCurrentlyOpenProject(Project project) {
+        this.openProject = project;
+    }
+
+    public Project getCurrentlyOpenProject() {
+        return openProject;
     }
 
     public int getSelectedTabIndex() {

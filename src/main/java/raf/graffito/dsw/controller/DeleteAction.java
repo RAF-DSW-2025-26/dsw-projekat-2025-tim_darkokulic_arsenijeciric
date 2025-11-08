@@ -1,8 +1,10 @@
 package raf.graffito.dsw.controller;
 
-import raf.graffito.dsw.gui.swing.GraffTree;
+import raf.graffito.dsw.core.ApplicationFramework;
+import raf.graffito.dsw.gui.swing.jtree.GraffTree;
 import raf.graffito.dsw.gui.swing.MainFrame;
 import raf.graffito.dsw.model.*;
+import raf.graffito.dsw.model.repository.GraffRepository;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -10,11 +12,9 @@ import java.awt.event.ActionEvent;
 public class DeleteAction extends AbstractGraffAction {
 
     private GraffTree graffTree;
-    private GraffRepository repository;
 
-    public DeleteAction(GraffTree graffTree, GraffRepository repository) {
+    public DeleteAction(GraffTree graffTree) {
         this.graffTree = graffTree;
-        this.repository = repository;
 
         putValue(NAME, "Delete");
         putValue(SHORT_DESCRIPTION, "Delete selected node");
@@ -26,6 +26,12 @@ public class DeleteAction extends AbstractGraffAction {
     public void actionPerformed(ActionEvent e) {
         GraffNode selected = graffTree.getSelectedNode();
         if (selected == null) return;
+
+        GraffRepository repository = ApplicationFramework.getInstance().getRepository();
+
+        if (selected instanceof Project project) {
+            MainFrame.getInstance().getPresentationView().closeAllProjectTabs(project);
+        }
 
         if (selected instanceof Presentation presentation) {
             MainFrame.getInstance().getPresentationView().closePresentationTab(presentation);

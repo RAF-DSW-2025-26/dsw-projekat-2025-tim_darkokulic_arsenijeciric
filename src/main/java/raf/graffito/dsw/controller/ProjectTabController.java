@@ -1,16 +1,19 @@
 package raf.graffito.dsw.controller;
 
+import raf.graffito.dsw.core.ApplicationFramework;
 import raf.graffito.dsw.gui.swing.MainFrame;
 import raf.graffito.dsw.gui.swing.PresentationView;
-import raf.graffito.dsw.model.GraffNode;
-import raf.graffito.dsw.model.Presentation;
-import raf.graffito.dsw.model.Project;
+import raf.graffito.dsw.model.*;
+import raf.graffito.dsw.model.repository.GraffRepository;
 
 import javax.swing.*;
 import javax.swing.colorchooser.AbstractColorChooserPanel;
 import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
+
+import static javax.swing.SwingConstants.EAST;
+import static javax.swing.SwingConstants.WEST;
 
 public class ProjectTabController {
 
@@ -75,9 +78,14 @@ public class ProjectTabController {
     public void openProjectTabs(Project project) {
         presentationView.clearAllTabs();
 
+        GraffRepository repository = ApplicationFramework.getInstance().getRepository();
         Color projectColor = chooseProjectColor(project);
         if (projectColor == null) return;
-        project.setColor(projectColor);
+
+        ColorDecorator decoratedProject = new ColorDecorator(project, projectColor);
+        repository.setProjectDecorator(project, decoratedProject);
+
+        presentationView.setCurrentlyOpenProject(project);
 
         for (GraffNode child : project.getChildren()) {
             if (child instanceof Presentation pres) {
@@ -93,10 +101,12 @@ public class ProjectTabController {
     }
 
     // helper funkcija koja bypass-uje biranje boja sa desnim klikom
-    public void openProjectTabsNoColor(Project project) {
+    public void openProjectTabsNoColor(Project project, ColorDecorator decorator) {
         presentationView.clearAllTabs();
 
-        Color projectColor = project.getColor() != null ? project.getColor() : Color.LIGHT_GRAY;
+        Color projectColor = (decorator != null) ? decorator.getColor() : Color.WHITE;
+
+        presentationView.setCurrentlyOpenProject(project);
 
         for (GraffNode child : project.getChildren()) {
             if (child instanceof Presentation pres) {
@@ -118,4 +128,6 @@ public class ProjectTabController {
     public void renamePresentationTab(Presentation pres, String newName) {
         presentationView.renamePresentationTab(pres, newName);
     }
+
+
 }

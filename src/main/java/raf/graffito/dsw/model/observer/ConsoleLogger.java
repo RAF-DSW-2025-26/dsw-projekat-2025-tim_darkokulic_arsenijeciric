@@ -1,7 +1,4 @@
-package raf.graffito.dsw.model;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+package raf.graffito.dsw.model.observer;
 
 public class ConsoleLogger implements Logger {
 

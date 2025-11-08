@@ -17,6 +17,8 @@ public abstract class AbstractGraffAction extends AbstractAction {
             System.err.println("File " + "images/exit.png" + " not found");
         }
         return icon;
+
+
     }
 
 }
