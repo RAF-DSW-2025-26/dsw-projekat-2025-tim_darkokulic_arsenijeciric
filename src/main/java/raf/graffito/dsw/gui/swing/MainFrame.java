@@ -1,7 +1,7 @@
 package raf.graffito.dsw.gui.swing;
 
 import raf.graffito.dsw.controller.ActionManager;
-import raf.graffito.dsw.controller.GraffTreeCellRenderer;
+import raf.graffito.dsw.gui.swing.jtree.GraffTreeCellRenderer;
 import raf.graffito.dsw.gui.swing.jtree.GraffTreeImplementation;
 import raf.graffito.dsw.model.*;
 import raf.graffito.dsw.model.observer.Message;

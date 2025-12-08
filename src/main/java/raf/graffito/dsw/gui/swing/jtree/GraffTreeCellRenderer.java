@@ -1,4 +1,4 @@
-package raf.graffito.dsw.controller;
+package raf.graffito.dsw.gui.swing.jtree;
 
 import raf.graffito.dsw.model.*;
 
