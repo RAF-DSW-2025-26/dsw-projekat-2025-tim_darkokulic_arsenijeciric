@@ -1,5 +1,7 @@
 package raf.graffito.dsw.gui.swing;
 
+import raf.graffito.dsw.model.GraffNode;
+import raf.graffito.dsw.model.Slide;
 import raf.graffito.dsw.model.observer.Message;
 import raf.graffito.dsw.model.Presentation;
 import raf.graffito.dsw.model.Project;
@@ -31,6 +33,21 @@ public class PresentationView extends JPanel implements Subscriber {
     }
 
     public void addPresentationTab(Presentation presentation, Color projectColor) {
+
+        JPanel slideContainer = new JPanel();
+        slideContainer.setLayout(new BoxLayout(slideContainer, BoxLayout.Y_AXIS));
+        slideContainer.setBackground(Color.WHITE);
+
+        for (GraffNode child : presentation.getChildren()) {
+            if (child instanceof Slide slide) {
+                raf.graffito.dsw.gui.swing.view.SlideView slideView = new raf.graffito.dsw.gui.swing.view.SlideView(slide);
+                slideView.setAlignmentX(Component.CENTER_ALIGNMENT);
+                slideContainer.add(Box.createVerticalStrut(10));
+                slideContainer.add(slideView);
+            }
+        }
+        slideContainer.add(Box.createVerticalGlue());
+
         JPanel slidePanel = new JPanel();
         slidePanel.setBackground(Color.WHITE);
         slidePanel.putClientProperty("presentation", presentation);

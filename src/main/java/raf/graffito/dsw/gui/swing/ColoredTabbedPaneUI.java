@@ -69,7 +69,7 @@ public class ColoredTabbedPaneUI extends BasicTabbedPaneUI {
         shape.addPoint(x + w, y + diagonal);
         shape.addPoint(x + w, y + h);
 
-        g2.setColor(Color.DARK_GRAY);
+        g2.setColor(Color.BLACK);
         g2.drawPolygon(shape);
 
         g2.dispose();
