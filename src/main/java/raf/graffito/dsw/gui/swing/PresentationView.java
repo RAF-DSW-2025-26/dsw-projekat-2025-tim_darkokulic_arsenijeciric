@@ -40,7 +40,7 @@ public class PresentationView extends JPanel implements Subscriber {
 
         for (GraffNode child : presentation.getChildren()) {
             if (child instanceof Slide slide) {
-                raf.graffito.dsw.gui.swing.view.SlideView slideView = new raf.graffito.dsw.gui.swing.view.SlideView(slide);
+                raf.graffito.dsw.gui.swing.SlideView slideView = new raf.graffito.dsw.gui.swing.SlideView(slide);
                 slideView.setAlignmentX(Component.CENTER_ALIGNMENT);
                 slideContainer.add(Box.createVerticalStrut(10));
                 slideContainer.add(slideView);

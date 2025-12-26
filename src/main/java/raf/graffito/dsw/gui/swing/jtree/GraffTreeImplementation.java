@@ -31,6 +31,9 @@ public class GraffTreeImplementation implements GraffTree {
         treeModel = new DefaultTreeModel(rootNode);
         tree = new JTree(treeModel);
 
+        // Set GraffTree reference for all existing slides
+        setTreeReferenceForAllSlides(root);
+
         tree.setEditable(true);
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
@@ -74,6 +77,11 @@ public class GraffTreeImplementation implements GraffTree {
                                 .getActionManager()
                                 .getProjectController()
                                 .openProjectTabs(project);
+                    } else if (userObject instanceof Slide slide) {
+                        MainFrame.getInstance()
+                                .getActionManager()
+                                .getSlideController()
+                                .openSlide(slide);
                     }
                 }
             }
@@ -136,6 +144,11 @@ public class GraffTreeImplementation implements GraffTree {
 
         DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(child);
         treeModel.insertNodeInto(childNode, parentNode, parentNode.getChildCount());
+
+        // If the child is a Slide, set the GraffTree reference so it can update the tree when elements are added
+        if (child instanceof Slide slide) {
+            slide.setGraffTree(this);
+        }
 
         TreePath path = new TreePath(parentNode.getPath());
         tree.expandPath(path);
@@ -201,5 +214,43 @@ public class GraffTreeImplementation implements GraffTree {
 
     public JTree getTree() {
         return tree;
+    }
+
+    @Override
+    public void addSlideElement(Slide slide, SlideElement element) {
+        DefaultMutableTreeNode slideNode = findTreeNode(slide);
+        if (slideNode == null) return;
+
+        DefaultMutableTreeNode elementNode = new DefaultMutableTreeNode(element);
+        treeModel.insertNodeInto(elementNode, slideNode, slideNode.getChildCount());
+
+        TreePath path = new TreePath(slideNode.getPath());
+        tree.expandPath(path);
+    }
+
+    @Override
+    public void removeSlideElement(Slide slide, SlideElement element) {
+        DefaultMutableTreeNode slideNode = findTreeNode(slide);
+        if (slideNode == null) return;
+
+        for (int i = 0; i < slideNode.getChildCount(); i++) {
+            DefaultMutableTreeNode child = (DefaultMutableTreeNode) slideNode.getChildAt(i);
+            if (child.getUserObject() == element) {
+                treeModel.removeNodeFromParent(child);
+                break;
+            }
+        }
+    }
+
+    private void setTreeReferenceForAllSlides(GraffNode node) {
+        if (node instanceof Slide slide) {
+            slide.setGraffTree(this);
+        }
+
+        if (node instanceof GraffNodeComposite composite) {
+            for (GraffNode child : composite.getChildren()) {
+                setTreeReferenceForAllSlides(child);
+            }
+        }
     }
 }
