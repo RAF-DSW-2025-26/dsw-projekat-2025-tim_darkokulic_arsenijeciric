@@ -28,4 +28,10 @@ public class LabelElement extends SlideElement {
                 text
         );
     }
+
+    @Override
+    public String toString() {
+        String preview = text.length() > 20 ? text.substring(0, 20) + "..." : text;
+        return "Text: " + preview;
+    }
 }

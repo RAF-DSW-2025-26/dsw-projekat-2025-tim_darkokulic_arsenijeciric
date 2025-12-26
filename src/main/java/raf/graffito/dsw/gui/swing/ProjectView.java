@@ -19,8 +19,11 @@ public class ProjectView extends JPanel implements Subscriber {
     private JLabel authorLabel;
     private JPanel imageListPanel;
     private List<BufferedImage> testImages;
+    private int selectedImageIndex = -1;
+    private List<JLabel> imageThumbnails;
 
     public ProjectView() {
+        this.imageThumbnails = new ArrayList<>();
         loadTestImages();
         initialize();
     }
@@ -61,8 +64,10 @@ public class ProjectView extends JPanel implements Subscriber {
         imageListPanel = new JPanel();
         imageListPanel.setLayout(new BoxLayout(imageListPanel, BoxLayout.Y_AXIS));
 
-        for (BufferedImage img : testImages) {
-            JLabel thumbnail = createThumbnail(img);
+        for (int i = 0; i < testImages.size(); i++) {
+            BufferedImage img = testImages.get(i);
+            JLabel thumbnail = createThumbnail(img, i);
+            imageThumbnails.add(thumbnail);
             imageListPanel.add(thumbnail);
             imageListPanel.add(Box.createVerticalStrut(5));
         }
@@ -114,16 +119,49 @@ public class ProjectView extends JPanel implements Subscriber {
         return img;
     }
 
-    private JLabel createThumbnail(BufferedImage img) {
+    private JLabel createThumbnail(BufferedImage img, int index) {
 
         Image scaled = img.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
         ImageIcon icon = new ImageIcon(scaled);
 
         JLabel thumbnail = new JLabel(icon);
-        thumbnail.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        thumbnail.setBorder(BorderFactory.createLineBorder(Color.GRAY, 2));
         thumbnail.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        thumbnail.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                selectImage(index);
+            }
+        });
+
         return thumbnail;
+    }
+
+    private void selectImage(int index) {
+        if (selectedImageIndex >= 0 && selectedImageIndex < imageThumbnails.size()) {
+            imageThumbnails.get(selectedImageIndex).setBorder(
+                BorderFactory.createLineBorder(Color.GRAY, 2)
+            );
+        }
+
+        selectedImageIndex = index;
+        if (selectedImageIndex >= 0 && selectedImageIndex < imageThumbnails.size()) {
+            imageThumbnails.get(selectedImageIndex).setBorder(
+                BorderFactory.createLineBorder(Color.BLUE, 3)
+            );
+        }
+    }
+
+    public BufferedImage getSelectedImage() {
+        if (selectedImageIndex >= 0 && selectedImageIndex < testImages.size()) {
+            return testImages.get(selectedImageIndex);
+        }
+        return null;
+    }
+
+    public int getSelectedImageIndex() {
+        return selectedImageIndex;
     }
 
     private JPanel createInfoRow(String labelText, JLabel valueLabel) {

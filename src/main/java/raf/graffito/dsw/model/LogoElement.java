@@ -28,4 +28,9 @@ public class LogoElement extends SlideElement {
                 logoType
         );
     }
+
+    @Override
+    public String toString() {
+        return "Logo";
+    }
 }

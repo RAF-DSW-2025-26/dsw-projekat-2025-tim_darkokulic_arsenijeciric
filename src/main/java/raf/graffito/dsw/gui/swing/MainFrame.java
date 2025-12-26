@@ -66,6 +66,9 @@ public class MainFrame extends JFrame implements Subscriber {
         MyToolBar toolBar = new MyToolBar(actionManager);
         add(toolBar, BorderLayout.NORTH);
 
+        SlideEditToolBar slideEditToolBar = new SlideEditToolBar(actionManager);
+        add(slideEditToolBar, BorderLayout.SOUTH);
+
         JTree tree = graffTree.generateTree(workspace);
         tree.setCellRenderer(new GraffTreeCellRenderer());
         tree.setEditable(false);

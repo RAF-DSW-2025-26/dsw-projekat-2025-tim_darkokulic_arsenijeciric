@@ -1,5 +1,6 @@
 package raf.graffito.dsw.model;
 
+import raf.graffito.dsw.gui.swing.jtree.GraffTree;
 import raf.graffito.dsw.model.observer.Message;
 import raf.graffito.dsw.model.observer.Subscriber;
 
@@ -11,6 +12,7 @@ public class Slide extends GraffNodeComposite {
     private String title;
     private List<SlideElement> elements;
     private List<Subscriber> subscribers; // observeri
+    private GraffTree graffTree; // Reference to update tree when elements change
 
     public Slide(GraffNode parent, String title) {
         super(parent);
@@ -21,12 +23,22 @@ public class Slide extends GraffNodeComposite {
 
     public void addElement(SlideElement element) {
         elements.add(element);
+        if (graffTree != null) {
+            graffTree.addSlideElement(this, element);
+        }
         notifySubscribers();
     }
 
     public void removeElement(SlideElement element) {
         elements.remove(element);
+        if (graffTree != null) {
+            graffTree.removeSlideElement(this, element);
+        }
         notifySubscribers();
+    }
+
+    public void setGraffTree(GraffTree graffTree) {
+        this.graffTree = graffTree;
     }
 
     public List<SlideElement> getElements() {
