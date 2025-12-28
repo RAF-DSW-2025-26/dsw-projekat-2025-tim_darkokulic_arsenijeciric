@@ -25,10 +25,10 @@ public class SlideView extends JPanel implements Subscriber {
     private double zoomFactor = 1.0;
     private Rectangle selectionRectangle;
 
-    public SlideView(Slide slide) {
+    public SlideView(Slide slide, StateManager stateManager, UndoRedoManager undoRedoManager) {
         this.slide = slide;
-        this.stateManager = new StateManager();
-        this.undoRedoManager = new UndoRedoManager();
+        this.stateManager = stateManager;
+        this.undoRedoManager = undoRedoManager;
         this.selectedElements = new ArrayList<>();
         initialize();
     }

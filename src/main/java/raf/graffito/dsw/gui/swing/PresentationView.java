@@ -1,5 +1,7 @@
 package raf.graffito.dsw.gui.swing;
 
+import raf.graffito.dsw.command.UndoRedoManager;
+import raf.graffito.dsw.controller.state.StateManager;
 import raf.graffito.dsw.model.GraffNode;
 import raf.graffito.dsw.model.Slide;
 import raf.graffito.dsw.model.observer.Message;
@@ -34,7 +36,7 @@ public class PresentationView extends JPanel implements Subscriber {
         return tabbedPane;
     }
 
-    public void addPresentationTab(Presentation presentation, Color projectColor) {
+    public void addPresentationTab(Presentation presentation, Color projectColor, StateManager stateManager, UndoRedoManager undoRedoManager) {
 
         JPanel slideContainer = new JPanel();
         slideContainer.setLayout(new BoxLayout(slideContainer, BoxLayout.Y_AXIS));
@@ -44,7 +46,7 @@ public class PresentationView extends JPanel implements Subscriber {
 
         for (GraffNode child : presentation.getChildren()) {
             if (child instanceof Slide slide) {
-                raf.graffito.dsw.gui.swing.SlideView slideView = new raf.graffito.dsw.gui.swing.SlideView(slide);
+                raf.graffito.dsw.gui.swing.SlideView slideView = new raf.graffito.dsw.gui.swing.SlideView(slide, stateManager, undoRedoManager);
                 slideView.setZoomFactor(currentScaleFactor);
                 slideView.setAlignmentX(Component.CENTER_ALIGNMENT);
                 slideContainer.add(Box.createVerticalStrut(10));
@@ -68,8 +70,8 @@ public class PresentationView extends JPanel implements Subscriber {
         tabbedPane.setTabComponentAt(index, new JLabel("  " + presentation.getNodeName() + "  "));
     }
 
-    public void addDirectSlideTab(Slide slide, Color projectColor) {
-        raf.graffito.dsw.gui.swing.SlideView slideView = new raf.graffito.dsw.gui.swing.SlideView(slide);
+    public void addDirectSlideTab(Slide slide, Color projectColor, StateManager stateManager, UndoRedoManager undoRedoManager) {
+        raf.graffito.dsw.gui.swing.SlideView slideView = new raf.graffito.dsw.gui.swing.SlideView(slide, stateManager, undoRedoManager);
 
         double currentScaleFactor = windowModeManager != null ? windowModeManager.getCurrentScaleFactor() : 1.0;
         slideView.setZoomFactor(currentScaleFactor);

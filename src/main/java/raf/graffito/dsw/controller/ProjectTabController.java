@@ -1,5 +1,7 @@
 package raf.graffito.dsw.controller;
 
+import raf.graffito.dsw.command.UndoRedoManager;
+import raf.graffito.dsw.controller.state.StateManager;
 import raf.graffito.dsw.core.ApplicationFramework;
 import raf.graffito.dsw.gui.swing.MainFrame;
 import raf.graffito.dsw.gui.swing.PresentationView;
@@ -89,9 +91,13 @@ public class ProjectTabController {
 
         for (GraffNode child : project.getChildren()) {
             if (child instanceof Presentation pres) {
-                presentationView.addPresentationTab(pres, projectColor);
+                StateManager stateManager = new StateManager();
+                UndoRedoManager undoRedoManager = new UndoRedoManager();
+                presentationView.addPresentationTab(pres, projectColor, stateManager, undoRedoManager);
             } else if (child instanceof Slide slide) {
-                presentationView.addDirectSlideTab(slide, projectColor);
+                StateManager stateManager = new StateManager();
+                UndoRedoManager undoRedoManager = new UndoRedoManager();
+                presentationView.addDirectSlideTab(slide, projectColor, stateManager, undoRedoManager);
             }
         }
 
@@ -112,9 +118,13 @@ public class ProjectTabController {
 
         for (GraffNode child : project.getChildren()) {
             if (child instanceof Presentation pres) {
-                presentationView.addPresentationTab(pres, projectColor);
+                StateManager stateManager = new StateManager();
+                UndoRedoManager undoRedoManager = new UndoRedoManager();
+                presentationView.addPresentationTab(pres, projectColor, stateManager, undoRedoManager);
             } else if (child instanceof Slide slide) {
-                presentationView.addDirectSlideTab(slide, projectColor);
+                StateManager stateManager = new StateManager();
+                UndoRedoManager undoRedoManager = new UndoRedoManager();
+                presentationView.addDirectSlideTab(slide, projectColor, stateManager, undoRedoManager);
             }
         }
 
@@ -126,7 +136,9 @@ public class ProjectTabController {
     }
 
     public void addPresentationTab(Presentation pres, Color projectColor) {
-        presentationView.addPresentationTab(pres, projectColor);
+        StateManager stateManager = new StateManager();
+        UndoRedoManager undoRedoManager = new UndoRedoManager();
+        presentationView.addPresentationTab(pres, projectColor, stateManager, undoRedoManager);
     }
 
     public void renamePresentationTab(Presentation pres, String newName) {

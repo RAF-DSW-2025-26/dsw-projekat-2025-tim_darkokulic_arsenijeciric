@@ -54,32 +54,6 @@ public class AddState implements State {
                     text
             );
 
-            slideView.getSlide().addElement(label);
-            slideView.repaint();
-        }
-    }
-
-    public void addTextElement(SlideView slideView) {
-        String text = JOptionPane.showInputDialog(
-                slideView,
-                "Enter text:",
-                "Add Text",
-                JOptionPane.PLAIN_MESSAGE
-        );
-
-        if (text != null && !text.trim().isEmpty()) {
-            Point centerPosition = new Point(
-                    SlideView.SLIDE_WIDTH / 2 - 100,
-                    SlideView.SLIDE_HEIGHT / 2 - 25
-            );
-
-            LabelElement label = new LabelElement(
-                    centerPosition,
-                    new Dimension(200, 50),
-                    0,
-                    text
-            );
-
             Slide slide = slideView.getSlide();
             AddElementCommand addCommand = new AddElementCommand(slide, label);
             UndoRedoManager manager = slideView.getUndoRedoManager();
