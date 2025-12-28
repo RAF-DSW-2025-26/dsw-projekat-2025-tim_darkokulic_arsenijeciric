@@ -1,5 +1,6 @@
 package raf.graffito.dsw.controller;
 
+import raf.graffito.dsw.command.UndoRedoManager;
 import raf.graffito.dsw.gui.swing.MainFrame;
 import raf.graffito.dsw.gui.swing.PresentationView;
 import raf.graffito.dsw.gui.swing.SlideView;
@@ -50,6 +51,15 @@ public class SlideController {
                     break;
                 }
             }
+        }
+
+        updateUndoRedoButtonStates();
+    }
+
+    private void updateUndoRedoButtonStates() {
+        MainFrame mainFrame = MainFrame.getInstance();
+        if (mainFrame != null && mainFrame.getActionManager() != null) {
+            mainFrame.getActionManager().updateUndoRedoButtonStates();
         }
     }
 
