@@ -1,7 +1,15 @@
 package raf.graffito.dsw.model;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import java.awt.*;
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = ImageElement.class, name = "IMAGE"),
+    @JsonSubTypes.Type(value = LabelElement.class, name = "LABEL"),
+    @JsonSubTypes.Type(value = LogoElement.class, name = "LOGO")
+})
 public abstract class SlideElement {
 
     protected Point position;

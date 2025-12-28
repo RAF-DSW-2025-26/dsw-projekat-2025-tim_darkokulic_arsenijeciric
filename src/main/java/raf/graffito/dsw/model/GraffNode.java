@@ -1,6 +1,9 @@
 package raf.graffito.dsw.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public abstract class GraffNode {
+    @JsonIgnore
     private GraffNode parent;
 
     public GraffNode(GraffNode parent) {

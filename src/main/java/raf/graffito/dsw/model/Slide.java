@@ -2,6 +2,7 @@ package raf.graffito.dsw.model;
 
 import raf.graffito.dsw.model.observer.SlideEvent;
 import raf.graffito.dsw.model.observer.Subscriber;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,7 @@ public class Slide extends GraffNodeComposite {
 
     private String title;
     private List<SlideElement> elements;
+    @JsonIgnore
     private List<Subscriber> subscribers;
     private SlideSpaceChecker spaceChecker;
 

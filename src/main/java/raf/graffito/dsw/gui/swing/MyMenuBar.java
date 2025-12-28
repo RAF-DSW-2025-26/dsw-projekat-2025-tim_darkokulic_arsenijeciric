@@ -12,6 +12,8 @@ public class MyMenuBar extends JMenuBar {
         JMenu fileMenu = new JMenu("File");
         fileMenu.setMnemonic(KeyEvent.VK_F);
 
+        SaveAction saveAction = actionManager.getSaveAction();
+        SaveAsAction saveAsAction = actionManager.getSaveAsAction();
         AboutUsAction aboutUsAction = actionManager.getAboutUsAction();
         ExitAction exitAction = actionManager.getExitAction();
         AddAction addAction = actionManager.getAddAction();
@@ -19,6 +21,9 @@ public class MyMenuBar extends JMenuBar {
         RenameAction renameAction = actionManager.getRenameAction();
         EditProjectAction editProjectAction = actionManager.getEditProjectAction();
         HelpAction helpAction = actionManager.getHelpAction();
+        fileMenu.add(saveAction);
+        fileMenu.add(saveAsAction);
+        fileMenu.addSeparator();
         fileMenu.add(exitAction);
         fileMenu.add(aboutUsAction);
         fileMenu.add(addAction);
