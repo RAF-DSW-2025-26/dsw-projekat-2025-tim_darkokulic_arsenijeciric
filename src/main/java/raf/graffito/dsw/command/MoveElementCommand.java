@@ -38,12 +38,14 @@ public class MoveElementCommand implements Command {
     @Override
     public void execute() {
         for (SlideElement element : elements) {
-            Point currentPos = element.getPosition();
-            Point newPos = new Point(
-                currentPos.x + delta.x,
-                currentPos.y + delta.y
-            );
-            element.setPosition(newPos);
+            Point initialPos = previousPositions.get(element);
+            if (initialPos != null) {
+                Point newPos = new Point(
+                    initialPos.x + delta.x,
+                    initialPos.y + delta.y
+                );
+                element.setPosition(newPos);
+            }
         }
     }
     

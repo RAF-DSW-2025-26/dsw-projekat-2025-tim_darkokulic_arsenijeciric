@@ -49,6 +49,15 @@ public class MoveState implements State {
             int totalDeltaY = currentPoint.y - startMousePosition.y;
 
             if (totalDeltaX != 0 || totalDeltaY != 0) {
+                if (initialPositions != null) {
+                    for (SlideElement element : slideView.getSelectedElements()) {
+                        Point initialPos = initialPositions.get(element);
+                        if (initialPos != null) {
+                            element.setPosition(new Point(initialPos));
+                        }
+                    }
+                }
+                
                 List<SlideElement> elementsToMove = new ArrayList<>(slideView.getSelectedElements());
                 Point delta = new Point(totalDeltaX, totalDeltaY);
                 
@@ -57,6 +66,16 @@ public class MoveState implements State {
                 manager.execute(moveCommand);
                 
                 updateButtonStates();
+            } else {
+                if (initialPositions != null) {
+                    for (SlideElement element : slideView.getSelectedElements()) {
+                        Point initialPos = initialPositions.get(element);
+                        if (initialPos != null) {
+                            element.setPosition(new Point(initialPos));
+                        }
+                    }
+                    slideView.repaint();
+                }
             }
         }
         
