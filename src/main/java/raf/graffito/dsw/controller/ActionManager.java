@@ -43,6 +43,9 @@ public class ActionManager {
     private UndoAction undoAction;
     private RedoAction redoAction;
 
+    private SaveAction saveAction;
+    private SaveAsAction saveAsAction;
+
     public ActionManager(GraffTree graffTree, JFrame parent, MainFrame mainFrame, Workspace workspace, WindowModeManager windowModeManager) {
 
 
@@ -81,6 +84,9 @@ public class ActionManager {
         redoAction = new RedoAction();
         undoAction.setEnabled(false);
         redoAction.setEnabled(false);
+
+        saveAction = new SaveAction();
+        saveAsAction = new SaveAsAction();
 
     }
 
@@ -211,6 +217,14 @@ public class ActionManager {
         UndoRedoManager manager = currentSlideView.getUndoRedoManager();
         undoAction.setEnabled(manager.canUndo());
         redoAction.setEnabled(manager.canRedo());
+    }
+
+    public SaveAction getSaveAction() {
+        return saveAction;
+    }
+
+    public SaveAsAction getSaveAsAction() {
+        return saveAsAction;
     }
 
 }

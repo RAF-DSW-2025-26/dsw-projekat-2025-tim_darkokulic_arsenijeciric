@@ -1,10 +1,12 @@
 package raf.graffito.dsw.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class ImageElement extends SlideElement {
 
+    @JsonIgnore
     private BufferedImage image;
     private int imageIndex;
 
