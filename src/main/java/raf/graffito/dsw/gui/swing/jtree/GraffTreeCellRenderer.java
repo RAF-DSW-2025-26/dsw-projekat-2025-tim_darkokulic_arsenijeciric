@@ -13,12 +13,18 @@ public class GraffTreeCellRenderer extends DefaultTreeCellRenderer {
     private Icon projectIcon;
     private Icon presentationIcon;
     private Icon slideIcon;
+    private Icon imageElementIcon;
+    private Icon labelElementIcon;
+    private Icon logoElementIcon;
 
     public GraffTreeCellRenderer() {
         workspaceIcon = scaleIcon("/images/workspace.png", 24, 24);
         projectIcon = scaleIcon("/images/project.png", 24, 24);
         presentationIcon = scaleIcon("/images/presentation.png", 24, 24);
         slideIcon = scaleIcon("/images/slide.png", 24, 24);
+        imageElementIcon = scaleIcon("/images/insert_image.png", 16, 16);
+        labelElementIcon = scaleIcon("/images/insert_text.png", 16, 16);
+        logoElementIcon = scaleIcon("/images/insert_logo.png", 16, 16);
     }
 
     private Icon scaleIcon(String path, int width, int height) {
@@ -47,6 +53,17 @@ public class GraffTreeCellRenderer extends DefaultTreeCellRenderer {
             else if (node instanceof Project) setIcon(projectIcon);
             else if (node instanceof Presentation) setIcon(presentationIcon);
             else if (node instanceof Slide) setIcon(slideIcon);
+        }
+
+        if (value instanceof DefaultMutableTreeNode treeNode) {
+            Object userObject = treeNode.getUserObject();
+            if (userObject instanceof ImageElement) {
+                setIcon(imageElementIcon);
+            } else if (userObject instanceof LabelElement) {
+                setIcon(labelElementIcon);
+            } else if (userObject instanceof LogoElement) {
+                setIcon(logoElementIcon);
+            }
         }
 
         return this;

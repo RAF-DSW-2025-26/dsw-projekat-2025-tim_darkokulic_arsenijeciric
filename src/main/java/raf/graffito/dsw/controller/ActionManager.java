@@ -5,6 +5,7 @@ import raf.graffito.dsw.gui.swing.jtree.GraffTree;
 import raf.graffito.dsw.gui.swing.MainFrame;
 import raf.graffito.dsw.gui.swing.SlideView;
 import raf.graffito.dsw.model.*;
+import raf.graffito.dsw.model.windowmode.WindowModeManager;
 
 import javax.swing.*;
 
@@ -19,22 +20,26 @@ public class ActionManager {
     private HelpAction helpAction;
     private SlideController slideController;
 
-    // State actions
     private SetStateAction selectStateAction;
     private SetStateAction moveStateAction;
     private SetStateAction resizeStateAction;
     private SetStateAction deleteStateAction;
     private SetStateAction zoomStateAction;
 
-    // Add element actions
     private SetAddTypeAction addTextAction;
     private SetAddTypeAction addImageAction;
     private SetAddTypeAction addLogoAction;
 
-    // Rotate actions
     private RotateLeftAction rotateLeftAction;
     private RotateRightAction rotateRightAction;
 
+    private DuplicateAction duplicateAction;
+
+    private WindowModeAction normalModeAction;
+    private WindowModeAction fullscreenModeAction;
+    private WindowModeAction smallModeAction;
+
+    public ActionManager(GraffTree graffTree, JFrame parent, MainFrame mainFrame, Workspace workspace, WindowModeManager windowModeManager) {
     // Undo/Redo actions
     private UndoAction undoAction;
     private RedoAction redoAction;
@@ -65,6 +70,11 @@ public class ActionManager {
         rotateLeftAction = new RotateLeftAction();
         rotateRightAction = new RotateRightAction();
 
+        duplicateAction = new DuplicateAction();
+
+        normalModeAction = new WindowModeAction(windowModeManager, "Normal");
+        fullscreenModeAction = new WindowModeAction(windowModeManager, "Fullscreen");
+        smallModeAction = new WindowModeAction(windowModeManager, "Small");
         undoAction = new UndoAction();
         redoAction = new RedoAction();
         undoAction.setEnabled(false);
@@ -146,6 +156,38 @@ public class ActionManager {
         return rotateRightAction;
     }
 
+    public void updateStateButtonSelection(String activeState) {
+        selectStateAction.setSelected(false);
+        moveStateAction.setSelected(false);
+        resizeStateAction.setSelected(false);
+        deleteStateAction.setSelected(false);
+        zoomStateAction.setSelected(false);
+        addTextAction.setSelected(false);
+
+        switch (activeState) {
+            case "select" -> selectStateAction.setSelected(true);
+            case "move" -> moveStateAction.setSelected(true);
+            case "resize" -> resizeStateAction.setSelected(true);
+            case "delete" -> deleteStateAction.setSelected(true);
+            case "zoom" -> zoomStateAction.setSelected(true);
+            case "add-text" -> addTextAction.setSelected(true);
+        }
+    }
+
+    public WindowModeAction getNormalModeAction() {
+        return normalModeAction;
+    }
+
+    public WindowModeAction getFullscreenModeAction() {
+        return fullscreenModeAction;
+    }
+
+    public WindowModeAction getSmallModeAction() {
+        return smallModeAction;
+    }
+
+    public DuplicateAction getDuplicateAction() {
+        return duplicateAction;
     public UndoAction getUndoAction() {
         return undoAction;
     }

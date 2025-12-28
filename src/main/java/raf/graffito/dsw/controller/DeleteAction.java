@@ -37,6 +37,10 @@ public class DeleteAction extends AbstractGraffAction {
             MainFrame.getInstance().getPresentationView().closePresentationTab(presentation);
         }
 
+        if (selected instanceof Slide slide && slide.getParent() instanceof Project) {
+            MainFrame.getInstance().getPresentationView().closeDirectSlideTab(slide);
+        }
+
         if (repository.removeNode(selected)) {
             graffTree.removeNode(selected);
         }

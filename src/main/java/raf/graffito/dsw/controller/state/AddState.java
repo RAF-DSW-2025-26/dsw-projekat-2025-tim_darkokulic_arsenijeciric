@@ -4,10 +4,7 @@ import raf.graffito.dsw.command.AddElementCommand;
 import raf.graffito.dsw.command.UndoRedoManager;
 import raf.graffito.dsw.gui.swing.MainFrame;
 import raf.graffito.dsw.gui.swing.SlideView;
-import raf.graffito.dsw.model.ImageElement;
-import raf.graffito.dsw.model.LabelElement;
-import raf.graffito.dsw.model.LogoElement;
-import raf.graffito.dsw.model.Slide;
+import raf.graffito.dsw.model.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,9 +14,49 @@ import java.awt.image.BufferedImage;
 public class AddState implements State {
 
     private String logoType = "circle";
+    private boolean waitingForTextPosition = false;
 
     @Override
     public void mouseClicked(MouseEvent e, SlideView slideView) {
+        if (waitingForTextPosition) {
+            addTextElementAtPosition(e.getPoint(), slideView);
+            waitingForTextPosition = false;
+            slideView.getStateManager().setSelectState();
+            raf.graffito.dsw.gui.swing.MainFrame.getInstance()
+                    .getActionManager()
+                    .updateStateButtonSelection("select");
+        }
+    }
+
+    public void startWaitingForTextPosition() {
+        waitingForTextPosition = true;
+    }
+
+    private void addTextElementAtPosition(Point position, SlideView slideView) {
+        double newElementArea = 200 * 50;
+        if (!checkAvailableSpaceWithFallback(slideView, newElementArea)) {
+            showInsufficientSpaceMessage(slideView);
+            return;
+        }
+
+        String text = JOptionPane.showInputDialog(
+                slideView,
+                "Enter text:",
+                "Add Text",
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (text != null && !text.trim().isEmpty()) {
+            LabelElement label = new LabelElement(
+                    position,
+                    new Dimension(200, 50),
+                    0,
+                    text
+            );
+
+            slideView.getSlide().addElement(label);
+            slideView.repaint();
+        }
     }
 
     public void addTextElement(SlideView slideView) {
@@ -76,6 +113,12 @@ public class AddState implements State {
             scaledHeight = (int) (originalHeight * scale);
         }
 
+        double newElementArea = scaledWidth * scaledHeight;
+        if (!checkAvailableSpaceWithFallback(slideView, newElementArea)) {
+            showInsufficientSpaceMessage(slideView);
+            return;
+        }
+
         Point centerPosition = new Point(
                 SlideView.SLIDE_WIDTH / 2 - scaledWidth / 2,
                 SlideView.SLIDE_HEIGHT / 2 - scaledHeight / 2
@@ -98,6 +141,12 @@ public class AddState implements State {
     }
 
     public void addLogoElement(SlideView slideView) {
+        double newElementArea = 100 * 100;
+        if (!checkAvailableSpaceWithFallback(slideView, newElementArea)) {
+            showInsufficientSpaceMessage(slideView);
+            return;
+        }
+
         Point centerPosition = new Point(
                 SlideView.SLIDE_WIDTH / 2 - 50,
                 SlideView.SLIDE_HEIGHT / 2 - 50
@@ -152,5 +201,40 @@ public class AddState implements State {
 
     public void setLogoType(String logoType) {
         this.logoType = logoType;
+    }
+
+    private boolean checkAvailableSpaceWithFallback(SlideView slideView, double newElementArea) {
+        Slide slide = slideView.getSlide();
+        SlideSpaceChecker originalChecker = slide.getSpaceChecker();
+
+        slide.setSpaceChecker(new AreaSumSpaceChecker());
+        boolean hasSpaceAreaSum = slide.hasAvailableSpace(SlideView.SLIDE_WIDTH, SlideView.SLIDE_HEIGHT, newElementArea);
+
+        if (hasSpaceAreaSum) {
+            slide.setSpaceChecker(originalChecker);
+            return true;
+        }
+
+        slide.setSpaceChecker(new BinaryMatrixSpaceChecker());
+        boolean hasSpaceMatrix = slide.hasAvailableSpace(SlideView.SLIDE_WIDTH, SlideView.SLIDE_HEIGHT, newElementArea);
+
+        if (hasSpaceMatrix) {
+            slide.setSpaceChecker(originalChecker);
+            return true;
+        }
+
+        slide.setSpaceChecker(originalChecker);
+        return false;
+    }
+
+    private void showInsufficientSpaceMessage(SlideView slideView) {
+        JOptionPane.showMessageDialog(
+                slideView,
+                String.format("Ne možete dodati nove elemente na Slide: Nema dovoljno mesta.\n" +
+                                "Minimum dostupnog mesta: 20%%",
+                        slideView.getSlide().getOccupiedSpacePercentage(SlideView.SLIDE_WIDTH, SlideView.SLIDE_HEIGHT)),
+                "Insufficient Space",
+                JOptionPane.WARNING_MESSAGE
+        );
     }
 }

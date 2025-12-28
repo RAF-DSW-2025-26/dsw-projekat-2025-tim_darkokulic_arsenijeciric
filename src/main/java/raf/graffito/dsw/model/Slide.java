@@ -1,7 +1,6 @@
 package raf.graffito.dsw.model;
 
-import raf.graffito.dsw.gui.swing.jtree.GraffTree;
-import raf.graffito.dsw.model.observer.Message;
+import raf.graffito.dsw.model.observer.SlideEvent;
 import raf.graffito.dsw.model.observer.Subscriber;
 
 import java.util.ArrayList;
@@ -11,38 +10,47 @@ public class Slide extends GraffNodeComposite {
 
     private String title;
     private List<SlideElement> elements;
-    private List<Subscriber> subscribers; // observeri
-    private GraffTree graffTree; // Reference to update tree when elements change
+    private List<Subscriber> subscribers;
+    private SlideSpaceChecker spaceChecker;
 
     public Slide(GraffNode parent, String title) {
         super(parent);
         this.title = title;
         this.elements = new ArrayList<>();
         this.subscribers = new ArrayList<>();
+        this.spaceChecker = new AreaSumSpaceChecker();
     }
 
     public void addElement(SlideElement element) {
         elements.add(element);
-        if (graffTree != null) {
-            graffTree.addSlideElement(this, element);
-        }
+        notifySlideEvent(new SlideEvent(this, element, SlideEvent.EventType.ELEMENT_ADDED));
         notifySubscribers();
     }
 
     public void removeElement(SlideElement element) {
         elements.remove(element);
-        if (graffTree != null) {
-            graffTree.removeSlideElement(this, element);
-        }
+        notifySlideEvent(new SlideEvent(this, element, SlideEvent.EventType.ELEMENT_REMOVED));
         notifySubscribers();
-    }
-
-    public void setGraffTree(GraffTree graffTree) {
-        this.graffTree = graffTree;
     }
 
     public List<SlideElement> getElements() {
         return elements;
+    }
+
+    public void setSpaceChecker(SlideSpaceChecker spaceChecker) {
+        this.spaceChecker = spaceChecker;
+    }
+
+    public SlideSpaceChecker getSpaceChecker() {
+        return spaceChecker;
+    }
+
+    public boolean hasAvailableSpace(int slideWidth, int slideHeight, double newElementArea) {
+        return spaceChecker.hasAvailableSpace(elements, slideWidth, slideHeight, newElementArea);
+    }
+
+    public double getOccupiedSpacePercentage(int slideWidth, int slideHeight) {
+        return spaceChecker.getOccupiedSpacePercentage(elements, slideWidth, slideHeight);
     }
 
     // Observer metode
@@ -57,6 +65,12 @@ public class Slide extends GraffNodeComposite {
     private void notifySubscribers() {
         for (Subscriber s : subscribers) {
             s.update(null);
+        }
+    }
+
+    private void notifySlideEvent(SlideEvent event) {
+        for (Subscriber s : subscribers) {
+            s.onSlideEvent(event);
         }
     }
 

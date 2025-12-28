@@ -8,6 +8,7 @@ import raf.graffito.dsw.model.observer.Message;
 import raf.graffito.dsw.model.observer.MessageGenerator;
 import raf.graffito.dsw.model.observer.Subscriber;
 import raf.graffito.dsw.model.repository.GraffRepository;
+import raf.graffito.dsw.model.windowmode.WindowModeManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,6 +17,7 @@ public class MainFrame extends JFrame implements Subscriber {
 
     private static MainFrame instance;
     private ActionManager actionManager;
+    private WindowModeManager windowModeManager;
 
     private ProjectView projectView;
     private PresentationView presentationView;
@@ -37,14 +39,21 @@ public class MainFrame extends JFrame implements Subscriber {
 
     private void initialize() {
         Toolkit kit = Toolkit.getDefaultToolkit();
-        int screenHeight = 600;
-        int screenWidth = 1000;
+        int screenHeight = 700;
+        int screenWidth = 1200;
         Dimension startSize = new Dimension(screenWidth, screenHeight);
         setSize(startSize);
-        setMinimumSize(startSize);
+        setMinimumSize(new Dimension(400, 250));
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("Graffito");
+
+        try {
+            ImageIcon icon = new ImageIcon(getClass().getResource("/images/symbol.png"));
+            setIconImage(icon.getImage());
+        } catch (Exception e) {
+            System.err.println("Failed to load application icon: " + e.getMessage());
+        }
     }
 
     public void finishInitialization(GraffRepository repository, MessageGenerator messageGenerator) {
@@ -54,8 +63,11 @@ public class MainFrame extends JFrame implements Subscriber {
         projectView = new ProjectView();
         presentationView = new PresentationView();
 
+        windowModeManager = new WindowModeManager(this);
+        presentationView.setWindowModeManager(windowModeManager);
+
         GraffTreeImplementation graffTree = new GraffTreeImplementation();
-        actionManager = new ActionManager(graffTree, this, this, workspace);
+        actionManager = new ActionManager(graffTree, this, this, workspace, windowModeManager);
 
         messageGenerator.addSubscriber(projectView);
         messageGenerator.addSubscriber(presentationView);
@@ -63,8 +75,14 @@ public class MainFrame extends JFrame implements Subscriber {
         MyMenuBar menu = new MyMenuBar(actionManager);
         setJMenuBar(menu);
 
+        JPanel northPanel = new JPanel(new BorderLayout());
         MyToolBar toolBar = new MyToolBar(actionManager);
-        add(toolBar, BorderLayout.NORTH);
+        WindowModePanel windowModePanel = new WindowModePanel(actionManager);
+
+        northPanel.add(toolBar, BorderLayout.NORTH);
+        northPanel.add(windowModePanel, BorderLayout.SOUTH);
+
+        add(northPanel, BorderLayout.NORTH);
 
         SlideEditToolBar slideEditToolBar = new SlideEditToolBar(actionManager);
         add(slideEditToolBar, BorderLayout.SOUTH);
@@ -145,5 +163,9 @@ public class MainFrame extends JFrame implements Subscriber {
 
     public PresentationView getPresentationView() {
         return presentationView;
+    }
+
+    public WindowModeManager getWindowModeManager() {
+        return windowModeManager;
     }
 }

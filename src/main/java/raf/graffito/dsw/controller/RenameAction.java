@@ -55,7 +55,6 @@ public class RenameAction extends AbstractGraffAction {
             if (repository.renameNode(selected, newName)) {
                 graffTree.renameNode(selected, newName);
 
-                // Update views if needed
                 if (selected instanceof Project project) {
                     JTabbedPane tabbedPane = MainFrame.getInstance().getTabbedPane();
                     Presentation currentPresentation = null;

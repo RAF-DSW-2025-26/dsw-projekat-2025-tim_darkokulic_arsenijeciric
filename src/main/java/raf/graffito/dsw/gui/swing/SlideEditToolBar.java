@@ -1,6 +1,8 @@
 package raf.graffito.dsw.gui.swing;
 
 import raf.graffito.dsw.controller.ActionManager;
+import raf.graffito.dsw.controller.SetAddTypeAction;
+import raf.graffito.dsw.controller.SetStateAction;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,15 +14,15 @@ public class SlideEditToolBar extends JToolBar {
         setFloatable(false);
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
-        addActionWithText(actionManager.getSelectStateAction());
-        addActionWithText(actionManager.getMoveStateAction());
-        addActionWithText(actionManager.getResizeStateAction());
-        addActionWithText(actionManager.getDeleteStateAction());
-        addActionWithText(actionManager.getZoomStateAction());
+        addStateActionWithText(actionManager.getSelectStateAction());
+        addStateActionWithText(actionManager.getMoveStateAction());
+        addStateActionWithText(actionManager.getResizeStateAction());
+        addStateActionWithText(actionManager.getDeleteStateAction());
+        addActionWithText(actionManager.getDuplicateAction());
 
         add(Box.createHorizontalGlue());
 
-        addActionWithText(actionManager.getAddTextAction());
+        addSetAddTypeActionWithText(actionManager.getAddTextAction());
         addActionWithText(actionManager.getAddImageAction());
         addActionWithText(actionManager.getAddLogoAction());
 
@@ -28,11 +30,39 @@ public class SlideEditToolBar extends JToolBar {
 
         addActionWithText(actionManager.getRotateLeftAction());
         addActionWithText(actionManager.getRotateRightAction());
+        addStateActionWithText(actionManager.getZoomStateAction());
 
-        add(Box.createHorizontalGlue());
+        actionManager.updateStateButtonSelection("select");
+    }
 
-        addActionWithText(actionManager.getUndoAction());
-        addActionWithText(actionManager.getRedoAction());
+    private void addStateActionWithText(SetStateAction action) {
+        JButton button = new JButton(action);
+        button.setFocusPainted(false);
+        button.setHideActionText(false);
+        button.setHorizontalTextPosition(SwingConstants.RIGHT);
+        button.setVerticalTextPosition(SwingConstants.CENTER);
+        button.setMargin(new Insets(5, 3, 6, 8));
+
+        Dimension size = new Dimension(20, 30);
+        button.setMaximumSize(size);
+
+        action.setButton(button);
+        add(button);
+    }
+
+    private void addSetAddTypeActionWithText(SetAddTypeAction action) {
+        JButton button = new JButton(action);
+        button.setFocusPainted(false);
+        button.setHideActionText(false);
+        button.setHorizontalTextPosition(SwingConstants.RIGHT);
+        button.setVerticalTextPosition(SwingConstants.CENTER);
+        button.setMargin(new Insets(5, 3, 6, 8));
+
+        Dimension size = new Dimension(20, 30);
+        button.setMaximumSize(size);
+
+        action.setButton(button);
+        add(button);
     }
 
     private void addActionWithText(Action action) {
