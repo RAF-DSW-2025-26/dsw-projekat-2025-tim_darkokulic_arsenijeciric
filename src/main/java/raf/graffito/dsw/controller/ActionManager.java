@@ -39,12 +39,14 @@ public class ActionManager {
     private WindowModeAction fullscreenModeAction;
     private WindowModeAction smallModeAction;
 
-    public ActionManager(GraffTree graffTree, JFrame parent, MainFrame mainFrame, Workspace workspace, WindowModeManager windowModeManager) {
-    // Undo/Redo actions
+
     private UndoAction undoAction;
     private RedoAction redoAction;
 
-    public ActionManager(GraffTree graffTree, JFrame parent, MainFrame mainFrame, Workspace workspace) {
+    public ActionManager(GraffTree graffTree, JFrame parent, MainFrame mainFrame, Workspace workspace, WindowModeManager windowModeManager) {
+
+
+  //  public ActionManager(GraffTree graffTree, JFrame parent, MainFrame mainFrame, Workspace workspace) {
 
         exitAction = new ExitAction();
         aboutAction = new AboutUsAction();
@@ -188,6 +190,8 @@ public class ActionManager {
 
     public DuplicateAction getDuplicateAction() {
         return duplicateAction;
+    }
+
     public UndoAction getUndoAction() {
         return undoAction;
     }

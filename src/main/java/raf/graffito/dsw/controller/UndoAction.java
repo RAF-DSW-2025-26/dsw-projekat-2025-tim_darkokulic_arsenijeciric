@@ -12,6 +12,7 @@ public class UndoAction extends AbstractGraffAction {
     public UndoAction() {
         putValue(NAME, "Undo");
         putValue(SHORT_DESCRIPTION, "Undo last action");
+        putValue(SMALL_ICON, loadIcon("/images/undo.png"));
     }
 
     @Override
