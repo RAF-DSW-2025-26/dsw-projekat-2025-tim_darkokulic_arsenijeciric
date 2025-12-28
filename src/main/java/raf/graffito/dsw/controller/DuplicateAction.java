@@ -1,5 +1,9 @@
 package raf.graffito.dsw.controller;
 
+import raf.graffito.dsw.command.AddElementCommand;
+import raf.graffito.dsw.command.CompositeCommand;
+import raf.graffito.dsw.command.Command;
+import raf.graffito.dsw.command.UndoRedoManager;
 import raf.graffito.dsw.gui.swing.MainFrame;
 import raf.graffito.dsw.gui.swing.SlideView;
 import raf.graffito.dsw.model.Slide;
@@ -37,6 +41,7 @@ public class DuplicateAction extends AbstractGraffAction {
         if (selectedElements.isEmpty()) return;
 
         List<SlideElement> duplicatedElements = new ArrayList<>();
+        List<Command> commands = new ArrayList<>();
 
         for (SlideElement element : selectedElements) {
             SlideElement duplicate = element.copy();
@@ -47,13 +52,18 @@ public class DuplicateAction extends AbstractGraffAction {
             );
             duplicate.setPosition(newPosition);
 
-            currentSlide.addElement(duplicate);
             duplicatedElements.add(duplicate);
+            commands.add(new AddElementCommand(currentSlide, duplicate));
         }
+
+        CompositeCommand duplicateCommand = new CompositeCommand(commands);
+        UndoRedoManager manager = currentSlideView.getUndoRedoManager();
+        manager.execute(duplicateCommand);
 
         currentSlideView.getSelectedElements().clear();
         currentSlideView.getSelectedElements().addAll(duplicatedElements);
 
         currentSlideView.repaint();
+        MainFrame.getInstance().getActionManager().updateUndoRedoButtonStates();
     }
 }
