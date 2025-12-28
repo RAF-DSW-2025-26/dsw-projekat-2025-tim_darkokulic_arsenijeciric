@@ -6,8 +6,10 @@ import raf.graffito.dsw.model.observer.Subscriber;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,12 +20,14 @@ public class ProjectView extends JPanel implements Subscriber {
     private JLabel presentationNameLabel;
     private JLabel authorLabel;
     private JPanel imageListPanel;
-    private List<BufferedImage> testImages;
+    private JScrollPane imageScroll;
+    private List<ImageProxy> images;
     private int selectedImageIndex = -1;
     private List<JLabel> imageThumbnails;
 
     public ProjectView() {
         this.imageThumbnails = new ArrayList<>();
+        this.images = new ArrayList<>();
         loadTestImages();
         initialize();
     }
@@ -61,19 +65,23 @@ public class ProjectView extends JPanel implements Subscriber {
                 BorderFactory.createTitledBorder("Available Images")
         ));
 
+        JButton addImageButton = new JButton("Add Image");
+        addImageButton.addActionListener(e -> addImages());
+
         imageListPanel = new JPanel();
         imageListPanel.setLayout(new BoxLayout(imageListPanel, BoxLayout.Y_AXIS));
 
-        for (int i = 0; i < testImages.size(); i++) {
-            BufferedImage img = testImages.get(i);
-            JLabel thumbnail = createThumbnail(img, i);
-            imageThumbnails.add(thumbnail);
-            imageListPanel.add(thumbnail);
-            imageListPanel.add(Box.createVerticalStrut(5));
-        }
+        refreshImageList();
 
-        JScrollPane imageScroll = new JScrollPane(imageListPanel);
+        imageScroll = new JScrollPane(imageListPanel);
         imageScroll.setPreferredSize(new Dimension(200, 300));
+        imageScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        imageScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(addImageButton);
+
+        imageSection.add(buttonPanel, BorderLayout.NORTH);
         imageSection.add(imageScroll, BorderLayout.CENTER);
 
         add(infoPanel, BorderLayout.NORTH);
@@ -81,7 +89,6 @@ public class ProjectView extends JPanel implements Subscriber {
     }
 
     private void loadTestImages() {
-        testImages = new ArrayList<>();
         String[] imagePaths = {
                 "/images/darko.jpg",
                 "/images/arsenije.jpg",
@@ -93,49 +100,68 @@ public class ProjectView extends JPanel implements Subscriber {
                 var stream = getClass().getResourceAsStream(path);
                 if (stream != null) {
                     BufferedImage img = ImageIO.read(stream);
-                    testImages.add(img);
+                    if (img != null) {
+                        String tempPath = "resource://" + path;
+                        images.add(RealImage.fromBufferedImage(tempPath, img));
+                    }
                 }
             } catch (IOException e) {
                 System.err.println("Failed to load image: " + path);
             }
         }
+    }
 
-        if (testImages.isEmpty()) {
-            testImages.add(createPlaceholderImage(Color.RED));
-            testImages.add(createPlaceholderImage(Color.GREEN));
-            testImages.add(createPlaceholderImage(Color.BLUE));
+    private void addImages() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setMultiSelectionEnabled(true);
+        fileChooser.setFileFilter(new FileNameExtensionFilter(
+                "Images", "jpg", "jpeg", "png", "gif", "bmp"
+        ));
+
+        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            File[] files = fileChooser.getSelectedFiles();
+            for (File file : files) {
+                images.add(new ProxyImage(file.getAbsolutePath()));
+            }
+            refreshImageList();
         }
     }
 
-    private BufferedImage createPlaceholderImage(Color color) {
-        BufferedImage img = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g2d = img.createGraphics();
-        g2d.setColor(color);
-        g2d.fillRect(0, 0, 100, 100);
-        g2d.setColor(Color.WHITE);
-        g2d.setFont(new Font("Arial", Font.BOLD, 16));
-        g2d.drawString("Test", 30, 55);
-        g2d.dispose();
-        return img;
+    private void refreshImageList() {
+        imageListPanel.removeAll();
+        imageThumbnails.clear();
+
+        for (int i = 0; i < images.size(); i++) {
+            JLabel thumbnail = createThumbnail(i);
+            imageThumbnails.add(thumbnail);
+            imageListPanel.add(thumbnail);
+            imageListPanel.add(Box.createVerticalStrut(5));
+        }
+
+        imageListPanel.revalidate();
+        imageListPanel.repaint();
     }
 
-    private JLabel createThumbnail(BufferedImage img, int index) {
+    private JLabel createThumbnail(int index) {
+        ImageProxy imageProxy = images.get(index);
+        BufferedImage thumbnail = imageProxy.getThumbnail();
+        
+        ImageIcon icon = new ImageIcon(thumbnail);
+        JLabel thumbnailLabel = new JLabel(icon);
+        thumbnailLabel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 2));
+        thumbnailLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        thumbnailLabel.setPreferredSize(new Dimension(100, 100));
+        thumbnailLabel.setMaximumSize(new Dimension(100, 100));
+        thumbnailLabel.setMinimumSize(new Dimension(100, 100));
 
-        Image scaled = img.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-        ImageIcon icon = new ImageIcon(scaled);
-
-        JLabel thumbnail = new JLabel(icon);
-        thumbnail.setBorder(BorderFactory.createLineBorder(Color.GRAY, 2));
-        thumbnail.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        thumbnail.addMouseListener(new java.awt.event.MouseAdapter() {
+        thumbnailLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 selectImage(index);
             }
         });
 
-        return thumbnail;
+        return thumbnailLabel;
     }
 
     private void selectImage(int index) {
@@ -154,8 +180,8 @@ public class ProjectView extends JPanel implements Subscriber {
     }
 
     public BufferedImage getSelectedImage() {
-        if (selectedImageIndex >= 0 && selectedImageIndex < testImages.size()) {
-            return testImages.get(selectedImageIndex);
+        if (selectedImageIndex >= 0 && selectedImageIndex < images.size()) {
+            return images.get(selectedImageIndex).getImage();
         }
         return null;
     }
