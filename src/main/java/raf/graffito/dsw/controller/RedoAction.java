@@ -12,6 +12,7 @@ public class RedoAction extends AbstractGraffAction {
     public RedoAction() {
         putValue(NAME, "Redo");
         putValue(SHORT_DESCRIPTION, "Redo last undone action");
+        putValue(SMALL_ICON, loadIcon("/images/redo.png"));
     }
 
     @Override

@@ -17,6 +17,10 @@ public class MyToolBar extends JToolBar {
         addActionWithText(actionManager.getDeleteAction());
         addActionWithText(actionManager.getEditProjectAction());
         addActionWithText(actionManager.getHelpAction());
+
+        addActionWithText(actionManager.getUndoAction());
+        addActionWithText(actionManager.getRedoAction());
+
     }
 
     private void addActionWithText(Action action) {
