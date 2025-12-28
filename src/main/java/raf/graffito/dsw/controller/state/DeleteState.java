@@ -1,6 +1,10 @@
 package raf.graffito.dsw.controller.state;
 
+import raf.graffito.dsw.command.DeleteElementCommand;
+import raf.graffito.dsw.command.UndoRedoManager;
+import raf.graffito.dsw.gui.swing.MainFrame;
 import raf.graffito.dsw.gui.swing.SlideView;
+import raf.graffito.dsw.model.Slide;
 import raf.graffito.dsw.model.SlideElement;
 
 import java.awt.*;
@@ -18,18 +22,29 @@ public class DeleteState implements State {
         );
 
         SlideElement clickedElement = findElementAtPoint(clickPoint, slideView);
+        Slide slide = slideView.getSlide();
+        UndoRedoManager manager = slideView.getUndoRedoManager();
 
         if (clickedElement != null) {
-            slideView.getSlide().removeElement(clickedElement);
+            DeleteElementCommand deleteCommand = new DeleteElementCommand(slide, clickedElement);
+            manager.execute(deleteCommand);
             slideView.getSelectedElements().remove(clickedElement);
             slideView.repaint();
+            updateButtonStates();
         } else if (!slideView.getSelectedElements().isEmpty()) {
             List<SlideElement> toDelete = new ArrayList<>(slideView.getSelectedElements());
-            for (SlideElement element : toDelete) {
-                slideView.getSlide().removeElement(element);
-            }
+            DeleteElementCommand deleteCommand = new DeleteElementCommand(slide, toDelete);
+            manager.execute(deleteCommand);
             slideView.getSelectedElements().clear();
             slideView.repaint();
+            updateButtonStates();
+        }
+    }
+    
+    private void updateButtonStates() {
+        MainFrame mainFrame = MainFrame.getInstance();
+        if (mainFrame != null && mainFrame.getActionManager() != null) {
+            mainFrame.getActionManager().updateUndoRedoButtonStates();
         }
     }
 

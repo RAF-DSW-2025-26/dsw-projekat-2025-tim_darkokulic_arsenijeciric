@@ -28,6 +28,11 @@ public class SlideEditToolBar extends JToolBar {
 
         addActionWithText(actionManager.getRotateLeftAction());
         addActionWithText(actionManager.getRotateRightAction());
+
+        add(Box.createHorizontalGlue());
+
+        addActionWithText(actionManager.getUndoAction());
+        addActionWithText(actionManager.getRedoAction());
     }
 
     private void addActionWithText(Action action) {

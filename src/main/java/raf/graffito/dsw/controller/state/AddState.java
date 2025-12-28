@@ -1,9 +1,13 @@
 package raf.graffito.dsw.controller.state;
 
+import raf.graffito.dsw.command.AddElementCommand;
+import raf.graffito.dsw.command.UndoRedoManager;
+import raf.graffito.dsw.gui.swing.MainFrame;
 import raf.graffito.dsw.gui.swing.SlideView;
 import raf.graffito.dsw.model.ImageElement;
 import raf.graffito.dsw.model.LabelElement;
 import raf.graffito.dsw.model.LogoElement;
+import raf.graffito.dsw.model.Slide;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,8 +43,12 @@ public class AddState implements State {
                     text
             );
 
-            slideView.getSlide().addElement(label);
+            Slide slide = slideView.getSlide();
+            AddElementCommand addCommand = new AddElementCommand(slide, label);
+            UndoRedoManager manager = slideView.getUndoRedoManager();
+            manager.execute(addCommand);
             slideView.repaint();
+            updateButtonStates();
         }
     }
 
@@ -81,8 +89,12 @@ public class AddState implements State {
                 imageIndex
         );
 
-        slideView.getSlide().addElement(imageElement);
+        Slide slide = slideView.getSlide();
+        AddElementCommand addCommand = new AddElementCommand(slide, imageElement);
+        UndoRedoManager manager = slideView.getUndoRedoManager();
+        manager.execute(addCommand);
         slideView.repaint();
+        updateButtonStates();
     }
 
     public void addLogoElement(SlideView slideView) {
@@ -98,8 +110,19 @@ public class AddState implements State {
                 logoType
         );
 
-        slideView.getSlide().addElement(logo);
+        Slide slide = slideView.getSlide();
+        AddElementCommand addCommand = new AddElementCommand(slide, logo);
+        UndoRedoManager manager = slideView.getUndoRedoManager();
+        manager.execute(addCommand);
         slideView.repaint();
+        updateButtonStates();
+    }
+    
+    private void updateButtonStates() {
+        MainFrame mainFrame = MainFrame.getInstance();
+        if (mainFrame != null && mainFrame.getActionManager() != null) {
+            mainFrame.getActionManager().updateUndoRedoButtonStates();
+        }
     }
 
     @Override
