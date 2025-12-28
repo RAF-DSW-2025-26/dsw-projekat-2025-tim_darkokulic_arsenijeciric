@@ -1,11 +1,15 @@
 package raf.graffito.dsw.controller;
 
+import raf.graffito.dsw.command.RotateElementCommand;
+import raf.graffito.dsw.command.UndoRedoManager;
 import raf.graffito.dsw.gui.swing.MainFrame;
 import raf.graffito.dsw.gui.swing.SlideView;
 import raf.graffito.dsw.model.SlideElement;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RotateRightAction extends AbstractGraffAction {
 
@@ -22,13 +26,16 @@ public class RotateRightAction extends AbstractGraffAction {
                 .getSlideController();
 
         SlideView currentSlideView = slideController.getCurrentSlideView();
-        if (currentSlideView == null) return;
+        if (currentSlideView == null || currentSlideView.getSelectedElements().isEmpty()) return;
 
-        for (SlideElement element : currentSlideView.getSelectedElements()) {
-            double currentRotation = element.getRotation();
-            element.setRotation(currentRotation + Math.PI / 2);
-        }
-
+        List<SlideElement> elements = new ArrayList<>(currentSlideView.getSelectedElements());
+        double rotationDelta = Math.PI / 2;
+        
+        RotateElementCommand rotateCommand = new RotateElementCommand(elements, rotationDelta);
+        UndoRedoManager manager = currentSlideView.getUndoRedoManager();
+        manager.execute(rotateCommand);
+        
         currentSlideView.repaint();
+        MainFrame.getInstance().getActionManager().updateUndoRedoButtonStates();
     }
 }

@@ -1,7 +1,9 @@
 package raf.graffito.dsw.controller;
 
+import raf.graffito.dsw.command.UndoRedoManager;
 import raf.graffito.dsw.gui.swing.jtree.GraffTree;
 import raf.graffito.dsw.gui.swing.MainFrame;
+import raf.graffito.dsw.gui.swing.SlideView;
 import raf.graffito.dsw.model.*;
 import raf.graffito.dsw.model.windowmode.WindowModeManager;
 
@@ -38,6 +40,11 @@ public class ActionManager {
     private WindowModeAction smallModeAction;
 
     public ActionManager(GraffTree graffTree, JFrame parent, MainFrame mainFrame, Workspace workspace, WindowModeManager windowModeManager) {
+    // Undo/Redo actions
+    private UndoAction undoAction;
+    private RedoAction redoAction;
+
+    public ActionManager(GraffTree graffTree, JFrame parent, MainFrame mainFrame, Workspace workspace) {
 
         exitAction = new ExitAction();
         aboutAction = new AboutUsAction();
@@ -68,6 +75,10 @@ public class ActionManager {
         normalModeAction = new WindowModeAction(windowModeManager, "Normal");
         fullscreenModeAction = new WindowModeAction(windowModeManager, "Fullscreen");
         smallModeAction = new WindowModeAction(windowModeManager, "Small");
+        undoAction = new UndoAction();
+        redoAction = new RedoAction();
+        undoAction.setEnabled(false);
+        redoAction.setEnabled(false);
 
     }
 
@@ -177,6 +188,25 @@ public class ActionManager {
 
     public DuplicateAction getDuplicateAction() {
         return duplicateAction;
+    public UndoAction getUndoAction() {
+        return undoAction;
+    }
+
+    public RedoAction getRedoAction() {
+        return redoAction;
+    }
+
+    public void updateUndoRedoButtonStates() {
+        SlideView currentSlideView = slideController.getCurrentSlideView();
+        if (currentSlideView == null) {
+            undoAction.setEnabled(false);
+            redoAction.setEnabled(false);
+            return;
+        }
+
+        UndoRedoManager manager = currentSlideView.getUndoRedoManager();
+        undoAction.setEnabled(manager.canUndo());
+        redoAction.setEnabled(manager.canRedo());
     }
 
 }

@@ -1,5 +1,6 @@
 package raf.graffito.dsw.gui.swing;
 
+import raf.graffito.dsw.command.UndoRedoManager;
 import raf.graffito.dsw.controller.state.StateManager;
 import raf.graffito.dsw.model.*;
 import raf.graffito.dsw.model.observer.Message;
@@ -19,6 +20,7 @@ public class SlideView extends JPanel implements Subscriber {
 
     private Slide slide;
     private StateManager stateManager;
+    private UndoRedoManager undoRedoManager;
     private List<SlideElement> selectedElements;
     private double zoomFactor = 1.0;
     private Rectangle selectionRectangle;
@@ -26,6 +28,7 @@ public class SlideView extends JPanel implements Subscriber {
     public SlideView(Slide slide) {
         this.slide = slide;
         this.stateManager = new StateManager();
+        this.undoRedoManager = new UndoRedoManager();
         this.selectedElements = new ArrayList<>();
         initialize();
     }
@@ -145,6 +148,10 @@ public class SlideView extends JPanel implements Subscriber {
 
     public StateManager getStateManager() {
         return stateManager;
+    }
+
+    public UndoRedoManager getUndoRedoManager() {
+        return undoRedoManager;
     }
 
     public List<SlideElement> getSelectedElements() {
