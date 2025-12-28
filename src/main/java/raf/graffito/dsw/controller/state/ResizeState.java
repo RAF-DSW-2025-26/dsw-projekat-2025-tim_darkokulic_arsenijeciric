@@ -46,7 +46,9 @@ public class ResizeState implements State {
             int newHeight = Math.max(10, originalSize.height + deltaY);
 
             if (e.isShiftDown()) {
-                double aspectRatio = (double) originalSize.width / originalSize.height;
+                double aspectRatio = originalSize.height > 0 
+                    ? (double) originalSize.width / originalSize.height 
+                    : 1.0;
                 if (Math.abs(deltaX) > Math.abs(deltaY)) {
                     newHeight = (int) (newWidth / aspectRatio);
                 } else {
@@ -56,10 +58,19 @@ public class ResizeState implements State {
 
             Dimension finalSize = new Dimension(newWidth, newHeight);
             if (!finalSize.equals(originalSize)) {
+                if (resizingElement != null && originalSize != null) {
+                    resizingElement.setSize(new Dimension(originalSize));
+                }
+                
                 ResizeElementCommand resizeCommand = new ResizeElementCommand(resizingElement, finalSize);
                 UndoRedoManager manager = slideView.getUndoRedoManager();
                 manager.execute(resizeCommand);
                 updateButtonStates();
+            } else {
+                if (resizingElement != null && originalSize != null) {
+                    resizingElement.setSize(new Dimension(originalSize));
+                    slideView.repaint();
+                }
             }
         }
         
@@ -89,7 +100,9 @@ public class ResizeState implements State {
         int newHeight = Math.max(10, originalSize.height + deltaY);
 
         if (e.isShiftDown()) {
-            double aspectRatio = (double) originalSize.width / originalSize.height;
+            double aspectRatio = originalSize.height > 0 
+                ? (double) originalSize.width / originalSize.height 
+                : 1.0;
             if (Math.abs(deltaX) > Math.abs(deltaY)) {
                 newHeight = (int) (newWidth / aspectRatio);
             } else {
