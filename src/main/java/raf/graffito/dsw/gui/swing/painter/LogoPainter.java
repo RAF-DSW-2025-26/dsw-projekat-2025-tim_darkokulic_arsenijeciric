@@ -100,7 +100,6 @@ public class LogoPainter {
         );
         g.draw(arc);
 
-        // Reverse transformations
         g.translate(w / 2f, h / 2f);
         g.rotate(-logo.getRotation());
         g.translate(-elementCenterX, -elementCenterY);

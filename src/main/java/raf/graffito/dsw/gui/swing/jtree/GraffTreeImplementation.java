@@ -5,6 +5,9 @@ import raf.graffito.dsw.controller.ProjectTabController;
 import raf.graffito.dsw.core.ApplicationFramework;
 import raf.graffito.dsw.gui.swing.MainFrame;
 import raf.graffito.dsw.model.*;
+import raf.graffito.dsw.model.observer.Message;
+import raf.graffito.dsw.model.observer.SlideEvent;
+import raf.graffito.dsw.model.observer.Subscriber;
 import raf.graffito.dsw.model.repository.GraffRepository;
 
 import javax.swing.*;
@@ -15,7 +18,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Enumeration;
 
-public class GraffTreeImplementation implements GraffTree {
+public class GraffTreeImplementation implements GraffTree, Subscriber {
 
     private JTree tree;
     private DefaultTreeModel treeModel;
@@ -31,8 +34,7 @@ public class GraffTreeImplementation implements GraffTree {
         treeModel = new DefaultTreeModel(rootNode);
         tree = new JTree(treeModel);
 
-        // Set GraffTree reference for all existing slides
-        setTreeReferenceForAllSlides(root);
+        subscribeToAllSlides(root);
 
         tree.setEditable(true);
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -145,9 +147,9 @@ public class GraffTreeImplementation implements GraffTree {
         DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(child);
         treeModel.insertNodeInto(childNode, parentNode, parentNode.getChildCount());
 
-        // If the child is a Slide, set the GraffTree reference so it can update the tree when elements are added
+        // subscriber koji notify-uje o promenama na slide-u
         if (child instanceof Slide slide) {
-            slide.setGraffTree(this);
+            slide.addSubscriber(this);
         }
 
         TreePath path = new TreePath(parentNode.getPath());
@@ -191,6 +193,8 @@ public class GraffTreeImplementation implements GraffTree {
                     }
                 }
             }
+        } else if (node instanceof Slide slide && slide.getParent() instanceof Project) {
+            MainFrame.getInstance().getPresentationView().renameDirectSlideTab(slide, newName);
         }
     }
 
@@ -242,15 +246,31 @@ public class GraffTreeImplementation implements GraffTree {
         }
     }
 
-    private void setTreeReferenceForAllSlides(GraffNode node) {
+    private void subscribeToAllSlides(GraffNode node) {
         if (node instanceof Slide slide) {
-            slide.setGraffTree(this);
+            slide.addSubscriber(this);
         }
 
         if (node instanceof GraffNodeComposite composite) {
             for (GraffNode child : composite.getChildren()) {
-                setTreeReferenceForAllSlides(child);
+                subscribeToAllSlides(child);
             }
+        }
+    }
+
+    @Override
+    public void update(Message message) {
+    }
+
+    @Override
+    public void onSlideEvent(SlideEvent event) {
+        switch (event.getEventType()) {
+            case ELEMENT_ADDED:
+                addSlideElement(event.getSlide(), event.getElement());
+                break;
+            case ELEMENT_REMOVED:
+                removeSlideElement(event.getSlide(), event.getElement());
+                break;
         }
     }
 }

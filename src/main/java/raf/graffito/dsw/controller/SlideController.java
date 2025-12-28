@@ -34,11 +34,31 @@ public class SlideController {
             Component component = tabbedPane.getComponentAt(i);
             if (component instanceof JPanel panel) {
                 Object tabPresentation = panel.getClientProperty("presentation");
+                Object tabDirectSlide = panel.getClientProperty("directSlide");
+
+                // Slajdovi unutar prezentacija
                 if (tabPresentation != null && slide.getParent() == tabPresentation) {
                     panel.removeAll();
                     panel.setLayout(new BorderLayout());
 
-                    JScrollPane scrollPane = new JScrollPane(currentSlideView);
+                    JPanel centerPanel = createCenteredSlidePanel(currentSlideView);
+                    JScrollPane scrollPane = new JScrollPane(centerPanel);
+                    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+                    panel.add(scrollPane, BorderLayout.CENTER);
+
+                    panel.revalidate();
+                    panel.repaint();
+
+                    tabbedPane.setSelectedIndex(i);
+                    break;
+                }
+                else if (tabDirectSlide == slide) {
+                    panel.removeAll();
+                    panel.setLayout(new BorderLayout());
+
+                    JPanel centerPanel = createCenteredSlidePanel(currentSlideView);
+                    JScrollPane scrollPane = new JScrollPane(centerPanel);
                     scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
                     scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
                     panel.add(scrollPane, BorderLayout.CENTER);
@@ -63,5 +83,12 @@ public class SlideController {
 
     public boolean isSlideOpen(Slide slide) {
         return currentSlide == slide;
+    }
+
+    private JPanel createCenteredSlidePanel(SlideView slideView) {
+        JPanel wrapper = new JPanel(new GridBagLayout());
+        wrapper.setBackground(new Color(186, 186, 186));
+        wrapper.add(slideView, new GridBagConstraints());
+        return wrapper;
     }
 }

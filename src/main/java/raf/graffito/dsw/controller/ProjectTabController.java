@@ -68,7 +68,7 @@ public class ProjectTabController {
                     "Color Already Used",
                     JOptionPane.WARNING_MESSAGE
             );
-            return chooseProjectColor(project); // try again
+            return chooseProjectColor(project);
         } else {
             usedColors.add(selectedColor);
             return selectedColor;
@@ -90,6 +90,8 @@ public class ProjectTabController {
         for (GraffNode child : project.getChildren()) {
             if (child instanceof Presentation pres) {
                 presentationView.addPresentationTab(pres, projectColor);
+            } else if (child instanceof Slide slide) {
+                presentationView.addDirectSlideTab(slide, projectColor);
             }
         }
 
@@ -111,6 +113,8 @@ public class ProjectTabController {
         for (GraffNode child : project.getChildren()) {
             if (child instanceof Presentation pres) {
                 presentationView.addPresentationTab(pres, projectColor);
+            } else if (child instanceof Slide slide) {
+                presentationView.addDirectSlideTab(slide, projectColor);
             }
         }
 

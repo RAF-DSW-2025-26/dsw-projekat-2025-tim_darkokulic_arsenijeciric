@@ -14,10 +14,7 @@ public abstract class SlideElement {
         this.rotation = rotation;
     }
 
-    // Prototype pattern
     public abstract SlideElement copy();
-
-    // ---- GETTERS & SETTERS ----
 
     public Point getPosition() {
         return position;
