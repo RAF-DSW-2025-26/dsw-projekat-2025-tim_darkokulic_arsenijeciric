@@ -1,6 +1,7 @@
 package raf.graffito.dsw.controller;
 
 import raf.graffito.dsw.command.UndoRedoManager;
+import raf.graffito.dsw.controller.state.StateManager;
 import raf.graffito.dsw.gui.swing.MainFrame;
 import raf.graffito.dsw.gui.swing.PresentationView;
 import raf.graffito.dsw.gui.swing.SlideView;
@@ -14,9 +15,13 @@ public class SlideController {
     private PresentationView presentationView;
     private SlideView currentSlideView;
     private Slide currentSlide;
+    private StateManager stateManager;
+    private UndoRedoManager undoRedoManager;
 
     public SlideController(PresentationView presentationView) {
         this.presentationView = presentationView;
+        this.stateManager = new StateManager();
+        this.undoRedoManager = new UndoRedoManager();
     }
 
     public void openSlide(Slide slide) {
@@ -25,7 +30,7 @@ public class SlideController {
         this.currentSlide = slide;
 
         if (currentSlideView == null || currentSlideView.getSlide() != slide) {
-            currentSlideView = new SlideView(slide);
+            currentSlideView = new SlideView(slide, stateManager, undoRedoManager);
             slide.addSubscriber(currentSlideView);
         }
 
